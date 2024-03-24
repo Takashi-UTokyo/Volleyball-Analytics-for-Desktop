@@ -1,0 +1,32 @@
+2024.2.24 Rana Verona vs Allianz Milano
+1set start 15:10 end 17:10  game 24min
+2set start 17:30 end 20:00  game 30min
+3set start 20:00 end 20:45  game 25min
+
+点数の間違いを修正するときにどこが間違えかわかりづらく、修正に時間がかかる
+! edit時にserve1,2のラジオボックス切り替えが非対応
+20ラリーくらいから少しラグ　→保存データから読み込み時にも起動少し遅くなる
+subwindow2のTeam1,2 -> Team1ab,Team2ab
+! やっぱりデータをこまめに保存できるようにする、エラー起きたときにデータ一から入れるのめんどい
+SUBのチーム間違えたらどうなるか
+SUBの訂正orSUB後のmotionの訂正はできるのか
+! motionの入力エラーのあと再入力できるようにする
+SetDetail の項目別得点がなんかおかしい ->df,play_dのミスだったが、校正機能つけたい
+Analy終了後にまたEntry_dataに戻りたい
+! breakpointをセット別に表示するためには、fRotTeam1,2を各セットごとに作成しなければならない
+! ->fRotTeam1,2およびsub_condition1,2およびfRot1,2のdict保存
+
+dfから直接データを抽出するコマンド機能つけたい
+Team1のNo.,action,result,zoneの抽出→そこからさらに抽出可能に(そのラリーのプレー全部を表示や、そのラリー中の特定のプレーや相手のプレーの抽出など)
+
+
+
+2024.3.4 Sir Safety Susa Vim Perugia vs Allianz Milano
+1set start 18:20 stop 18:50 start 1:19 end 1:49 game 30min
+2set start 13:50 stop 14:20 start 14:35 end 15:14 game 35min
+3set start 15:30 end 16:30 game 35min
+4set start 16:50 end 17:40 game 30min
+5set start 17:50 end 18:15 game 17min
+
+Entry画面からファイル保存→Analy画面からファイル保存すると、Set_Reultが最終セット２個保存されてしまう場合がある→Saved dataで開けなくなる
+

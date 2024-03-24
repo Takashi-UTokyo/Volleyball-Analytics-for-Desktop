@@ -1,0 +1,21 @@
+ver11_1_1からの変更点
+
+1．vb_data1.pyからvb_data2.pyへの更新
+    コマンドの入力規則の変更
+    →vb_data1.pyではTeam2からのサーブ時にTeam1とTeam2の入力順と実際の行動順が逆転する
+     また、,,の複数使用により煩雑さが増している
+    トランジットコマンドを新たに加えることで感覚的に入力しやすくなる
+
+2.fRotTeam,,sub_condition,frotation,fRot
+    fRotTeam,sub_conditionをセットごとにリスト化
+    sub_conditionはセットごとに上書き(非保存)
+    frotationはsubwindow2のローテーション表示のために作成している
+
+3.vb_entry.pyからvb_entry2.pyへの更新
+    fRotTeam1の保存形式の変更により更新
+    選手交代機能の追加
+    データの途中保存への対応
+
+4.vb_analytics.pyの新規作成
+
+
