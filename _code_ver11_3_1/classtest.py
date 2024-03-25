@@ -1,6 +1,6 @@
 import pandas as pd
 
-class calc():
+class calc:
     def __init__(self,score1,score2,score3) -> None:
         print("calculate class")
         self.score1 = score1
@@ -16,3 +16,6 @@ class calc():
     def std(self):
         std = (((self.score1 - self.avg())**2 + (self.score2 - self.avg())**2 + (self.score3 - self.avg())**2)/3)**(1/2)
         return std
+
+calculate = calc(15,12,14)
+calculate.avg()
