@@ -1,0 +1,169 @@
+新たな枠組み
+
+用語の定義化
+  記録データの用語
+  セットデータ(set)：記号!：1セットごとのデータのまとまり：12 sa 56/8 ra 32:11 tb 51:1 aa 6/2 bt 87/20 da 32:8 tb 51:14 aap 18.12 se 560
+    プレーデータ(play)：区別記号. ：1ラリーごとのデータのまとまり：12 sa 56/8 ra 32:11 tb 51:1 aa 6/2 bt 87/20 da 32:8 tb 51:14 aap 18
+      トランジションデータ(transition)：区別記号/：1トランジションごとのデータのまとまり：8 ra 32:11 tb 51:1 aap 65/
+        モーションデータ(motion)：区別記号:：トランジション内の各選手の行動のデータのまとまり：8 ra 32:
+          コマンドデータ(command)：区別記号空白：モーションデータを構成する各要素
+            背番号データ(number)：記号数字：プレーを行う選手の背番号：
+            アクションデータ(action)：記号ローマ字：プレーを行う選手の行動コマンド：
+            リザルトデータ(result)：記号ローマ字：行ったプレーの評価項目。1文字or2文字：a ap ae等
+            ゾーンデータ(zone)：記号数字：行ったプレー結果のボールの位置。2文字：
+        ロケーションデータ(location)：記号*：各アクションデータに対応する各チームの選手の位置情報：未作成
+
+
+入力方法
+  入力情報：
+    セット：モーションの最初
+    ラリー：
+    プレー：1番目　選手の背番号：2番目　アクション＋リザルト(得点(+))：3番目　ゾーン
+
+
+解析方法
+  入力機能：
+    all_play_dから直接解析→　ログに「チーム△の〇番がサーブ→チーム□の〇番がレセプション」と文字で出力
+  スタッツ解析
+    all_play_dをdf化→ 
+  プロット解析
+
+
+データの保持
+  基本的にデータは辞書型で保持しておき、機能を使うときに利用しやすい形(別の辞書型やdf)にそれぞれ変換する
+  入力データ：プレーデータを辞書型で取得
+    play_d = {"Set":1,"Rally":1,"play_data":"12 sa 56/8 ra 32:11 tb 51:1 aa 68/2 bta 87:20 da 32:8 tb 51:14 apa 51"}
+    play_d = {"Set":1,"Rally":2,"play_data":"12 se 560"}
+  変換データ：トランジションデータに変換：transition番号は1,2,3~
+    trans_d = [
+      {"Set":1,"Rally":1,"Transition":1,"trans_data":"12 sa 56"},
+      {"Set":1,"Rally":1,"Transition":2,"trans_data":"8 ra 32:11 tb 51:1 aa 68"},
+      {"Set":1,"Rally":1,"Transition":3,"trans_data":"2 bta 87:20 da 32:8 tb 51:13 apa 65"},
+    ]
+  変換データ：トランジションデータからポイントデータ作成　←　trans_dataから"p" or "e"を検索
+    point_d = [
+      {"Set":1,"Rally":1,"point1":1,"point2":0},
+      {"Set":1,"Rally":2,"point1":0,"point2":1}
+    ]
+  変換データ：モーションデータに変換
+    motion_d = [
+      {"Set":1,"Rally":1,"Transition":1,"Motion":1,"motion_data":"12 sa 56"},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":1,"motion_data":"8 ra 32"},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":2,"motion_data":"11 tb 51"},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":3,"motion_data":"1 aa 51"},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":1,"motion_data":"2 bta 87"},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":2,"motion_data":"20 da 32},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":3,"motion_data":"8 tb 51"},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":4,"motion_data":"14 apa 65"}
+      ]
+  変換データ：コマンドデータに変換
+    command_d = [
+      {"Set":1,"Rally":1,"Transition":1,"Motion":1,"No":12,"action":"s","result":"a","zone":56},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":1,"No":8,"action":"r","result":"a","zone":32},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":2,"No":11,"action":"t","result":"b","zone":51},
+      {"Set":1,"Rally":1,"Transition":2,"Motion":3,"No":1,"action":"a","result":"a","zone":51},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":1,"No":2,"action":"b","result":"ta","zone":87},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":2,"No":20,"action":"d","result":"a","zone":32},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":3,"No":8,"action":"t","result":"b","zone":51},
+      {"Set":1,"Rally":1,"Transition":3,"Motion":4,"No":14,"action":"a","result":"a","zone":65},
+      {"Set":1,"Rally":2,"Transition":1,"Motion":1,"No":12,"action":"s","result":"e","zone":560}
+    ]
+  変換データ：コマンドデータからポイントデータ作成　←　resultから"p" or "e"を検索
+    point_d = [
+      {"Set":1,"Rally":1,"point1":1,"point2":0},
+      {"Set":1,"Rally":2,"point1":0,"point2":1}
+    ]
+  得点データ：
+    point1,point2：trans_dから作成したpoint_dの最新のpointを取得
+    prepoint1,prepoint2：point_dの1つ前のpointを取得
+    score1,score2：point1,point2の合計
+    ローテーション：初期ローテーションとpoint_dから回転数を計算…prepoint,pointから判断したrot1,rot2の積算
+  表示データ：モーションデータから出力画面に表示
+    入力時：プレーデータ→コマンドデータ
+    修正時：プレーデータ→コマンドデータ
+  
+
+    
+
+    検索：
+      Set番号とRally番号から対象のプレーデータ取得
+
+    修正：
+      対象のプレーデータから対象の箇所を修正し、組み込みなおす
+      修正済みプレーデータ→コマンドデータ作成→表示機能
+      修正済みプレーデータ→トランジションデータ→ポイントデータ→スコア、ローテーションの再計算
+
+    交代データ：
+      sub_d = [
+        {"Set":1,"Rally":2,"team":1,"In":5,"Out":12},
+      ]
+      
+  解析時：
+    スタッツ
+    
+
+動作：
+  Entry：
+    function > match_info:
+      *入力:
+      file_path{season,tournament,date,team1,team2}
+      >> team1_index,team2_index
+    function > set_info:
+      Set_Info{set_number,ServeTeam,fRot1,fRot2,fRotTeam1,fRotTeam2}
+    function > entry_data:
+      *入力:
+      play_d = {"Set":1,"Rally","play_data":"12 se 560"}
+      >> play_d -> all_play_d = [{"Set":1,"Rally":1,"play_data":"12 sa 56/8 ra 32:11 tb 51:1 aa65/2 bta 87:20 da 32:8 tb 51:14 apa 65"},{"Set":1,"Rally":2,"play_data":"12 se 560"}]
+      >> play_d -> trans_d -> point_d -> point1,point2 and prepoint1,prepoint2 -> score1,score2 and rot1,rot2 -> スコア、現在ローテーションの表示機能
+      >> play_d -> command_d -> log:プレーの表示機能
+      *交代:
+        sub_d = {"Set":1,"Rally":2,"Team":1,"In":5,"Out":12}
+      *検索:
+      >> play_d -> search_d = play_d[lambda :該当箇所("Set","Rally")]
+      *修正:
+      edition_d = {"Set":1,"Rally":2,"play_data":"12 se 650"}
+      >> edition_d -> play_d[lambda :該当箇所("Set","Rally")] = edition_d
+      >> play_d -> trans_d -> point -> ...
+      >> play_d -> command_d -> ...
+      *保存:
+      file_path,match_data{Set_Info,Set_Result{set_number,score1,score2},play_d,sub_d}
+      *終了:
+      file_path,match_data{Set_Info,Set_Result{set_number,score1,score2},play_d,sub_d}
+
+  
+  Entry2:
+    function > search_match:
+      *検索:
+      file_path{season,tournament,date,team1,team2}
+      >> team1_index,team2_index
+    function > entry_data2:
+      Set_Info,Set_Result,play_d,sub_d
+      >> play_d -> trans_d -> point_d -> ... -> スコア、現在ローテーションの表示機能
+      *入力:
+      *検索:
+      *修正:
+      *保存:
+      *終了:
+
+  Analytics:
+    score:
+      >> Set_Result -> 得点
+      >> play_d -> trans_d -> point_d ->Rally抽出-> command_d -> アクション別得点
+    BP:
+      function > makeBP:
+        >> play_d -> trans_d ->Rally抽出-> command_d -> Bラリー、Bアクション
+        >> play_d -> trans_d ->Rally抽出-> fRotTeam -> Bローテーション
+    plot:
+      function > makeplot:
+        *プロット:
+        >> play_d -> command_d -> df_plot
+    stats:
+      function > Tstats:
+        *スタッツ:
+        >> play_d,team_index -> command_d -> stats
+    log:
+      >> play_d,sub_d,point_d -> プレーの表示機能&条件付表示
+    save:
+      file_path,match_data
+
+

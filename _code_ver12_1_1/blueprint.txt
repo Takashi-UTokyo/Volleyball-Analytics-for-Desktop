@@ -1,0 +1,9 @@
+初期画面:
+  モード選択画面:
+    入力モード:
+      新規作成:
+        試合情報入力:
+          *入力:file_path{season,tournament,date,team1,team2}
+          >>Python > indexの検索実行
+          
+        
