@@ -1,5 +1,5 @@
-from _code_ver11_2_1 import vb_option as vo
-from _code_ver11_2_1 import vb_file as vf
+from _code_ver11_2_1.Function import vb_option as vo
+from _code_ver11_2_1.Function import vb_file as vf
 from _code_ver11_2_1.Data import vb_data2 as vd2
 
 import PySimpleGUI as sg

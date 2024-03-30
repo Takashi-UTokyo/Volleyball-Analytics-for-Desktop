@@ -1,11 +1,11 @@
 
 # 
-from _code_ver11_2_1 import vb_option as vo
+from _code_ver11_2_1.Function import vb_option as vo
 from _code_ver11_2_1.Data import vb_stats1 as vs1
 from _code_ver11_2_1.Data import vb_stats2 as vs2
 from _code_ver11_2_1.Data import vb_plot1 as vp1
 from _code_ver11_2_1.Data import vb_plot2 as vp2
-from _code_ver11_2_1 import vb_file as vf
+from _code_ver11_2_1.Function import vb_file as vf
 
 import PySimpleGUI as sg
 import matplotlib.pyplot as plt
