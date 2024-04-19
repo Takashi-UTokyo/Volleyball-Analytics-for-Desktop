@@ -10,9 +10,11 @@ class Entry:
     self.set_info = []
     self.result = []
     self.play_d = []
+    self.subconsition1 = []
+    self.subconsition2 = []
     pass
     
-  def entry_match_info(self,season,tournament,date,team1,team2):
+  def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
     self.season = season
     self.tournament = tournament
     self.date = date
@@ -27,7 +29,7 @@ class Entry:
     }
     pass
 
-  def entry_set_info(self,set_number,serveteam,frotteam1,frotteam2):
+  def entry_set_info(self,set_number:int,serveteam:int,frotteam1:list,frotteam2:list):
     set_info_ = {
       "set_number":set_number,
       "serveteam":serveteam,
@@ -36,9 +38,7 @@ class Entry:
     }
     self.set_info.append(set_info_)
   
-  def entry_play_data(self):
-    set_number = int(input("Set : "))
-    rally_number = int(input("Rally : "))
+  def entry_play_data(self,set_number,rally_number):
     play_data = input("play_data : ")
     play_d_ = {
       "Set":set_number,
@@ -60,8 +60,6 @@ class Entry:
     self.play_d[edit_number] = edit_play_d_
   
 
-
-    
 
 
 
