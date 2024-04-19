@@ -3,6 +3,10 @@ from _code_ver11_2_1.Function import vb_option as vo
 import pandas as pd
 import numpy as np
 
+
+from _code_ver11_2_1.Function import vb_file as vf
+
+
 # 個人スタッツdf作成
 # Team1
 # チーム別スタッツdf作成
