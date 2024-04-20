@@ -100,51 +100,79 @@ class DataConversion:
     return command_d
 
 
-  def trans2point(self,play_d: list) -> list:
-    trans_d = self.play2trans(play_d)
+  def play2point(self,play_d: list) -> list:
     point_d = []
-    passp = False
-    rally = 0
-    for t_number0 in range(len(trans_d)):
-      if not trans_d[t_number0]:
-        continue
-      if trans_d[t_number0]["Rally"] == rally:
-        continue
-      if "p" in trans_d[t_number0]["trans_data"]:
-        point=1
-        passp = True
-      elif "e" in trans_d[t_number0]["trans_data"] and passp:
-        continue
-      elif "e" in trans_d[t_number0]["trans_data"]:
-        point = -1
-      else:
-        continue
+    for set_number in range(1,play_d[len(play_d)-1]["Set"]+1):
+      play_d_ = list(filter(lambda d:d["Set"]==set_number,play_d))
+      for r_number in range(1,play_d_[len(play_d_)-1]["Rally"]+1):
+        trans_d_ = self.play2trans(list(filter(lambda d: d["Rally"]==r_number,play_d_)))
+        if list(filter(lambda d:"p" in d["trans_data"],trans_d_)) and (list(filter(lambda d: "e" in d["trans_data"],trans_d_))):
+          d = list(filter(lambda d: "p" in d["trans_data"],trans_d_))[0]
+          if d["transition"]%2 == 1:
+            point1 = 1
+            point2 = 0
+          elif d["transition"]%2 == 0:
+            point1 = 0
+            point2 = 1
+          point_d_ = {
+            "Set":set_number,
+            "Rally":r_number,
+            "transition":d["transition"],
+            "point1":point1,
+            "point2":point2
+          }
+        elif (d := list(filter(lambda d: "p" in d["trans_data"],trans_d_))):
+          if d[0]["transition"]%2 == 1:
+            point1 = 1
+            point2 = 0 
+          elif d[0]["transition"]%2 == 0:
+            point1 = 0
+            point2 = 1
+          point_d_ = {
+            "Set":set_number,
+            "Rally":r_number,
+            "transition":d[0]["transition"],
+            "point1":point1,
+            "point2":point2
+          }
+        elif (d := list(filter(lambda d: "e" in d["trans_data"],trans_d_))):
+          if d[0]["transition"]%2 == 1:
+            point1 = 0
+            point2 = 1
+          elif d[0]["transition"]%2 == 0:
+            point1 = 1
+            point2 = 0
+          point_d_ = {
+            "Set":set_number,
+            "Rally":r_number,
+            "transition":d[0]["transition"],
+            "point1":point1,
+            "point2":point2
+          }
+        point_d.append(point_d_)
+    return point_d
 
-      if trans_d[t_number0]["transition"]%2 ==1:
-        if point == 1:
-          point1 = 1
-          point2 = 0
-        elif point == -1:
-          point1 = 0
-          point2 = 1
-      elif trans_d[t_number0]["transition"]%2 ==0:
-        if point ==1:
-          point1 = 0
-          point2 = 1
-        elif point == -1:
-          point1 = 1
-          point2 = 0
-      rally = trans_d[t_number0]["Rally"]
-      point_d_ = {
-        "Set":trans_d[t_number0]["Set"],
-        "Rally":trans_d[t_number0]["Rally"],
-        "transition":trans_d[t_number0]["transition"],
-        "point1":point1,
-        "point2":point2
+  def play2score(self,play_d:list):
+    score_d = []
+    point_d = self.play2point(play_d)
+    for set_number in range(1,point_d[len(point_d)-1]["Set"]+1):
+      score1 = 0
+      score2 = 0
+      point_d_ = list(filter(lambda d: d["Set"]==set_number,point_d))
+      for r_number in range (0,len(point_d_)):
+        score1 += point_d_[r_number]["point1"]
+        score2 += point_d_[r_number]["point2"]
+      score_d_ = {
+        "Set":set_number,
+        "score1":score1,
+        "score2":score2
       }
-      point_d.append(point_d_)
-      pass
-    return point_d      
+      score_d.append(score_d_)
+    return score_d
+  
+  
+  def play2rot(self,play_d):
+    pass
   
   def play2match(self,play_d: list) -> list:
     set_d_3 = []
@@ -172,3 +200,5 @@ play_d = [
   {"Set":2,"Rally":1,"play_data":"/12 sa 89/12 ra 32:8 ta 11:2 apa 66"}
   ]
 
+self = DataConversion()
+self.play2point(play_d)

@@ -77,11 +77,12 @@ class File:
         json.dump(_index,f,indent=2)
     pass
 
-  def open_index(self,team):
+  def open_index(self,season,tournament,team):
     with open(self.index_path) as f:
       _index = json.load(f)
-    _index0 = list(filter(lambda d: d["season"] == self.season and d["tournament"] == self.tournament and d["team"] == team,_index))[0]
-    return _index0
+    if (check := list(filter(lambda d: d["season"]==season and d["tournament"]==tournament and d["team"]==team,_index))):
+      _index0 = check[0]
+      return _index0
 
 self = File()
 self.season = "2023-24"
@@ -97,4 +98,3 @@ player_number = 14
 player_position = "OH"
 player_name = "Yuki Ishikawa"
 self.append_player(player_number,player_position,player_name)
-self.open_index(team)
