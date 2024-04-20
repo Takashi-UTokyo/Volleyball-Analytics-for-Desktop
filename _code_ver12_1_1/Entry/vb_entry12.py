@@ -5,6 +5,10 @@ from _code_ver12_1_1.Data import vb_data2 as vd2
 import PySimpleGUI as sg
 import pandas as pd
 
+from _code_ver12_1_1.Data.vb_file12 import File
+
+
+
 class Entry:
   def __init__(self):
     self.set_info = []
@@ -13,7 +17,7 @@ class Entry:
     self.subconsition1 = []
     self.subconsition2 = []
     pass
-    
+
   def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
     self.season = season
     self.tournament = tournament
@@ -58,13 +62,39 @@ class Entry:
   def edit_play_data(self,edit_set_number,edit_rally_number,edit_play_d_):
     edit_number = self.play_d.index(list(filter(lambda d:d["Set"]==edit_set_number and d["Rally"]==edit_rally_number,self.play_d))[0])
     self.play_d[edit_number] = edit_play_d_
-  
 
+class Entry_new(Entry):
+  def __init__(self):
+    
+    pass
 
+  def entry_new_0(self):
+    window = Info_window()
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break
+      elif event == "Set":
+        self.entry_match_info(values["Season"],values["Tournament"],values["Date"],values["Team1"],values["Team2"])
+        window[" Continue "].update(disabled=False)
+        file = File()
+        self.player_index1 = file.open_index(self.season,self.tournament,self.team1)
+        self.player_index2 = file.open_index(self.season,self.tournament,self.team2)
+        window["Team1ab"].update(self.player_index1["abbreviation"])
+        window["Team2ab"].update(self.player_index2["abbreviation"])
+        pass
+      elif event == " Continue ":
+        break
+    window.close()
+    pass
 
+  def entry_new_1(self):
 
+    pass
+      
+self = Entry_new()
 
-
+self.entry_new_0()
 
 
 
@@ -723,7 +753,7 @@ def pop_sub(Set,Rally,Team1ab,Team2ab,play_d,sub_condition1,sub_condition2,fRotT
 
 # 試合情報入力ウィンドウ
 def Info_window():
-  Info_layout = [[sg.Text("Season : "),sg.Input(key="Season",size=(10,5))],[sg.Text("Tournament : "),sg.Input(key="Tournament")],[sg.Text("Date : "),sg.Input(key="Date")],[sg.Text("Team1 : "),sg.Input(key="Team1",size=(9,5))],[sg.Text("Team2 : "),sg.Input(key="Team2",size=(9,5))],[],[sg.Button("Set")],[sg.Button(" Continue ",disabled=True)],[sg.Text("",size=(10,5)),sg.Text("-------Player_index-------",key="Info_Set"),sg.Text("",size=(10,5))],[sg.Text("",key="Team1ab")],[sg.Text(key="Team2ab")]]
+  Info_layout = [[sg.Text("Season : "),sg.Input(key="Season",size=(10,5))],[sg.Text("Tournament : "),sg.Input(key="Tournament")],[sg.Text("Date : "),sg.Input(key="Date")],[sg.Text("Team1 : "),sg.Input(key="Team1",size=(18,5))],[sg.Text("Team2 : "),sg.Input(key="Team2",size=(18,5))],[],[sg.Button("Set")],[sg.Button(" Continue ",disabled=True)],[sg.Text("",size=(10,5)),sg.Text("-------Player_index-------",key="Info_Set"),sg.Text("",size=(10,5))],[sg.Text("",key="Team1ab")],[sg.Text(key="Team2ab")]]
   return sg.Window("Entry Match Infomation",Info_layout,finalize=True)
 
 
