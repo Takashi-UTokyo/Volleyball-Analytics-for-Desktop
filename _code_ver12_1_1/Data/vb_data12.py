@@ -152,9 +152,9 @@ class DataConversion:
         point_d.append(point_d_)
     return point_d
 
-  def play2score(self,play_d:list):
+  def play2score(self):
     score_d = []
-    point_d = self.play2point(play_d)
+    point_d = self.play2point(self.play_d)
     for set_number in range(1,point_d[len(point_d)-1]["Set"]+1):
       score1 = 0
       score2 = 0
@@ -171,9 +171,7 @@ class DataConversion:
     return score_d
   
   
-  def play2rot(self,play_d):
-    pass
-  
+
   def play2match(self,play_d: list) -> list:
     set_d_3 = []
     for set_number in range(1,play_d[len(play_d)-1]["Set"]+1):

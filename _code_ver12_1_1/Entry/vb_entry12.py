@@ -18,17 +18,28 @@ class Entry(Window):
     self.set_info_ = None
     self.Nset_number = None
     self.Nserveteam = None
+    self.Nrot_d = {
+      "rotation1":0,
+      "rotation2":0
+    }
     self.Nfrot_number1 = None
     self.Nfrot_number2 = None
     self.Nfrotlist1 = None
     self.Nfrotlist2 = None
     self.Nsubconsition1 = None
     self.Nsubconsition2 = None
-    self.Nscore1 = None
-    self.Nscore2 = None
+    self.Nrally_number = 1
+    self.Nscore1 = 0
+    self.Nscore2 = 0
+    self.Nrot_number1 = None
+    self.Nrot_number2 = None
+    self.Ncalc_rot = None
+    self.Nrotcondition1 = None
+    self.Nrotcondition2 = None
 
     self.set_result = []
     self.play_d = []
+    self.point_d = None
 
     pass
 
@@ -55,8 +66,8 @@ class Entry(Window):
     for x in range(0,6):
       int(frotlist1[x])
       int(frotlist2[x])
-    self.Nfrotlist1 = [[frotlist1[x],"0"] for x in range(0,6) if x]
-    self.Nfrotlist2 = [[frotlist2[y],"0"] for y in range(0,6) if y]
+    self.Nfrotlist1 = [[frotlist1[x],"0"] for x in range(0,6)]
+    self.Nfrotlist2 = [[frotlist2[y],"0"] for y in range(0,6)]
     self.set_info_ = {
       "set_number":self.Nset_number,
       "serveteam":self.Nserveteam,
@@ -66,9 +77,74 @@ class Entry(Window):
       "frotteam2":self.Nfrotlist2
     }
     self.set_info.append(self.set_info_)
-    self.Nsubconsition1 = [0,0,0,0,0,0]
+    self.Nsubcondition1 = [0,0,0,0,0,0]
     self.Nsubcondition2 = [0,0,0,0,0,0]
   
+  def calc_rotation(self):
+    rotation1 = 0
+    rotation2 = 0
+    if self.point_d:
+      point_d_ = list(filter(lambda d:d["Set"]==self.Nset_number,self.point_d))
+      for p_number0 in range(0,len(point_d_)):
+        rally = point_d_[p_number0]["Rally"]
+        if rally==1:
+          if self.Nserveteam:
+            if point_d_[p_number0]["point2"]:
+              rotation2 += 1
+          else:
+            if point_d_[p_number0]["point1"]:
+              rotation1 += 1
+        else:
+          if point_d_[p_number0-1]["point1"]:
+            if point_d_[p_number0]["point2"]:
+              rotation2 += 1
+          else:
+            if point_d_[p_number0]["point1"]:
+              rotation1 += 1
+    self.Nrot_d = {
+      "rotation1":rotation1,
+      "rotation2":rotation2
+    }
+    pass
+
+  def update_rot_number(self):
+    rot = [6,5,4,3,2,1]
+    rNumber01 = rot.index(self.Nfrot_number1)
+    rNumber02 = rot.index(self.Nfrot_number2)
+    rNumber1 = rNumber01 + self.Nrot_d["rotation1"]
+    rNumber2 = rNumber02 + self.Nrot_d["rotation2"]
+    self.Nrot_number1 = rot[(rNumber1 + 6)%6]
+    self.Nrot_number2 = rot[(rNumber2 + 6)%6]
+    pass
+  def update_rotation(self):
+    self.Nrotlist1 = [self.Nfrotlist1[x-(6-self.Nrot_d["rotation1"]%6)] for x in range(0,6)]
+    self.Nrotlist2 = [self.Nfrotlist2[y-(6-self.Nrot_d["rotation2"]%6)] for y in range(0,6)]
+    pass
+  def update_Nrotcondition(self):
+    self.Nrotcondition1 = [self.Nrotlist1[x][self.Nsubcondition1[x]] for x in range(0,6)]
+    self.Nrotcondition2 = [self.Nrotlist2[y][self.Nsubcondition2[y]] for y in range(0,6)]
+    pass
+  def update_score(self):
+    score1 = 0
+    score2 = 0
+    if self.point_d:
+      point_d_ = list(filter(lambda d: d["Set"]==self.Nset_number,self.point_d))
+      for r_number in range (0,len(point_d_)):
+        score1 += point_d_[r_number]["point1"]
+        score2 += point_d_[r_number]["point2"]
+    self.Nscore1 = score1
+    self.Nscore2 = score2
+    pass
+  def update_serveteam(self,subwindow2):
+    if self.point_d:
+      if self.point_d[len(self.point_d)-1]["point1"]:
+        subwindow2["Serve1"].update(True)
+      else:
+        subwindow2["Serve2"].update(True)
+    else:
+      subwindow2[f"Serve{self.set_info_["serveteam"]}"].update(True)
+    pass
+
   def entry_play_data(self,rally_number,play_data):
     play_d_ = {
       "Set":self.Nset_number,
@@ -76,9 +152,8 @@ class Entry(Window):
       "play_data":play_data
     }
     self.play_d.append(play_d_)
-    self.score_d = DtC.play2score(self.play_d)
     self.point_d = DtC.play2point(self.play_d)
-    
+    self.Nrally_number += 1
     pass
 
   def complete_set(self):
@@ -156,37 +231,57 @@ class Entry_new(Entry):
     window.close()
     pass
 
+  def entry_new_21(self,window,subwindow2):
+    # 更新事項をまとめる
+    self.update_score()
+    self.update_serveteam(subwindow2)
+    self.calc_rotation()
+    self.update_rot_number()
+    self.update_rotation()
+    self.update_Nrotcondition()
+    window["Set"].update(self.Nset_number)
+    window["Rally"].update(self.Nrally_number)
+    subwindow2["Score1"].update(self.Nscore1)
+    subwindow2["Score2"].update(self.Nscore2)
+    subwindow2["Rot1"].update(self.Nrot_number1)
+    subwindow2["Rot2"].update(self.Nrot_number2)
+    for i in range(0,6):
+      subwindow2[f"Team1S{i+1}"].update(self.Nrotcondition1[i])
+      subwindow2[f"Team2S{i+1}"].update(self.Nrotcondition2[i])
+    window["play_data"].update("")
+    pass
+
   def entry_new_2(self):
     subwindow = self.entry_sub(450,100)
     subwindow2 = self.entry_sub2(450,320)
     window = self.entry_main(600,320)
-    window["Set"].update(self.set_number)
-    window["Rally"].update(1)
-    subwindow2["Score1"].update(0)
-    subwindow2["Score2"].update(0)
-    subwindow2[f"Serve{self.set_info_["serveteam"]}"].update(True)
-    subwindow2["Rot1"].update(self.set_info_["frot1"])
-    subwindow2["Rot2"].update(self.set_info_["frot2"])
-    for i in range(0,6):
-      subwindow2[f"Team1S{i+1}"].update(self.set_info_["frotteam1"][i])
-      subwindow2[f"Team2S{i+1}"].update(self.set_info_["frotteam2"][i])
+    self.entry_new_21(window,subwindow2)
+    # window["Set"].update(self.Nset_number)
+    # window["Rally"].update(1)
+    # subwindow2["Score1"].update(0)
+    # subwindow2["Score2"].update(0)
+    # subwindow2[f"Serve{self.set_info_["serveteam"]}"].update(True)
+    # subwindow2["Rot1"].update(self.set_info_["frot1"])
+    # subwindow2["Rot2"].update(self.set_info_["frot2"])
+    # for i in range(0,6):
+    #   subwindow2[f"Team1S{i+1}"].update(self.set_info_["frotteam1"][i][0])
+    #   subwindow2[f"Team2S{i+1}"].update(self.set_info_["frotteam2"][i][0])
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
         break
-      elif event == "Submit":
-        self.entry_play_data(values["Rally"],values["play_data"])
-        score1 = list(filter(lambda d: d["Set"]==self.set_number,self.score_d))[0]["score1"]
-        score2 = list(filter(lambda d: d["Set"]==self.set_number,self.score_d))[0]["score2"]
-        subwindow2["Score1"].update(score1)
-        subwindow2["Score2"].update(score2)
-        if self.point_d[len(self.point_d)-1]["point1"]:
-          subwindow2["Serve1"].update(True)
-        else:
-          subwindow2["Serve2"].update(True)
-        pass
-      elif event == " Search ":
-
+      elif event == "Submit" or event == " Search ":
+        if event == "Submit":
+          self.entry_play_data(values["Rally"],values["play_data"])
+        # score1 = list(filter(lambda d: d["Set"]==self.Nset_number,self.score_d))[0]["score1"]
+        # score2 = list(filter(lambda d: d["Set"]==self.Nset_number,self.score_d))[0]["score2"]
+        # subwindow2["Score1"].update(score1)
+        # subwindow2["Score2"].update(score2)
+        # if self.point_d[len(self.point_d)-1]["point1"]:
+        #   subwindow2["Serve1"].update(True)
+        # else:
+        #   subwindow2["Serve2"].update(True)
+        self.entry_new_21(window,subwindow2)
         pass
     window.close()
     subwindow.close()
