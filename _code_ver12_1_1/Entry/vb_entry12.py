@@ -14,10 +14,20 @@ DtC = DataConversion()
 class Entry(Window):
   def __init__(self):
     self.set_info = []
+    # 現在セットの情報
+    self.set_info_ = None
+    self.Nset_number = None
+    self.Nserveteam = None
+    self.Nfrot_number1 = None
+    self.Nfrot_number2 = None
+    self.Nfrotlist1 = None
+    self.Nfrotlist2 = None
+    self.Nsubconsition1 = None
+    self.Nsubconsition2 = None
+
     self.set_result = []
     self.play_d = []
-    self.subconsition1 = []
-    self.subconsition2 = []
+
     pass
 
   def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
@@ -36,35 +46,33 @@ class Entry(Window):
     pass
 
   def entry_set_info(self,set_number:str,serveteam:str,frot1:str,frot2:str,frotteam1:list,frotteam2:list):
-    self.set_number = int(set_number)
-    self.serveteam = int(serveteam)
-    self.frot1 = int(frot1)
-    self.frot2 = int(frot2)
-    self.frotteam1 = [[frotteam1[x],"0"] for x in range(0,6)]
-    self.frotteam2 = [[frotteam2[y],"0"] for y in range(0,6)]
+    self.Nset_number = int(set_number)
+    self.Nserveteam = int(serveteam)
+    self.Nfrot_number1 = int(frot1)
+    self.Nfrot_number2 = int(frot2)
+    self.Nfrotlist1 = [[frotteam1[x],"0"] for x in range(0,6)]
+    self.Nfrotlist2 = [[frotteam2[y],"0"] for y in range(0,6)]
     self.set_info_ = {
-      "set_number":set_number,
-      "serveteam":serveteam,
-      "frot1":frot1,
-      "frot2":frot2,
-      "frotteam1":frotteam1,
-      "frotteam2":frotteam2
+      "set_number":self.set_number,
+      "serveteam":self.serveteam,
+      "frot1":self.Nfrot_number1,
+      "frot2":self.Nfrot_number2,
+      "frotteam1":self.Nfrotlist1,
+      "frotteam2":self.Nfrotlist2
     }
     self.set_info.append(self.set_info_)
-    self.subconsition1 = [0,0,0,0,0,0]
-    self.subcondition2 = [0,0,0,0,0,0]
+    self.Nsubconsition1 = [0,0,0,0,0,0]
+    self.Nsubcondition2 = [0,0,0,0,0,0]
   
   def entry_play_data(self,rally_number,play_data):
     play_d_ = {
-      "Set":self.set_number,
+      "Set":self.Nset_number,
       "Rally":int(rally_number),
       "play_data":play_data
     }
     self.play_d.append(play_d_)
     self.score_d = DtC.play2score(self.play_d)
     self.point_d = DtC.play2point(self.play_d)
-    
-    
     pass
 
   def complete_set(self):
@@ -170,6 +178,9 @@ class Entry_new(Entry):
           subwindow2["Serve1"].update(True)
         else:
           subwindow2["Serve2"].update(True)
+        pass
+      elif event == " Search ":
+
         pass
     window.close()
     subwindow.close()
