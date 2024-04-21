@@ -36,11 +36,9 @@ class Entry(Window):
     self.Ncalc_rot = None
     self.Nrotcondition1 = None
     self.Nrotcondition2 = None
-
     self.set_result = []
     self.play_d = []
     self.point_d = None
-
     pass
 
   def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
@@ -163,10 +161,21 @@ class Entry(Window):
       "score2":self.Nscore2
     }
     self.set_result.append(set_result_)
+
+  def search_play_data(self,edit_set_number,edit_rally_number):
+    search_play_data = self.play_d[self.play_d.index(list(filter(lambda d: d["Set"] == edit_set_number and d["Rally"]==edit_rally_number,self.play_d))[0])]
+    return search_play_data["play_data"]
   
   def edit_play_data(self,edit_set_number,edit_rally_number,edit_play_d_):
     edit_number = self.play_d.index(list(filter(lambda d:d["Set"]==edit_set_number and d["Rally"]==edit_rally_number,self.play_d))[0])
-    self.play_d[edit_number] = edit_play_d_
+    edit_play_d = {
+      "Set":edit_set_number,
+      "Rally":edit_rally_number,
+      "play_data":edit_play_d_
+    }
+    self.play_d[edit_number] = edit_play_d
+    self.point_d = DtC.play2point(self.play_d)
+    pass
 
 class Entry_new(Entry):
   def __init__(self):
@@ -231,7 +240,7 @@ class Entry_new(Entry):
     window.close()
     pass
 
-  def entry_new_21(self,window,subwindow2):
+  def entry_new_2update(self,window,subwindow,subwindow2):
     # 更新事項をまとめる
     self.update_score()
     self.update_serveteam(subwindow2)
@@ -249,39 +258,30 @@ class Entry_new(Entry):
       subwindow2[f"Team1S{i+1}"].update(self.Nrotcondition1[i])
       subwindow2[f"Team2S{i+1}"].update(self.Nrotcondition2[i])
     window["play_data"].update("")
+    subwindow["-LOGpld-"].update(self.play_d)
     pass
 
   def entry_new_2(self):
     subwindow = self.entry_sub(450,100)
     subwindow2 = self.entry_sub2(450,320)
     window = self.entry_main(600,320)
-    self.entry_new_21(window,subwindow2)
-    # window["Set"].update(self.Nset_number)
-    # window["Rally"].update(1)
-    # subwindow2["Score1"].update(0)
-    # subwindow2["Score2"].update(0)
-    # subwindow2[f"Serve{self.set_info_["serveteam"]}"].update(True)
-    # subwindow2["Rot1"].update(self.set_info_["frot1"])
-    # subwindow2["Rot2"].update(self.set_info_["frot2"])
-    # for i in range(0,6):
-    #   subwindow2[f"Team1S{i+1}"].update(self.set_info_["frotteam1"][i][0])
-    #   subwindow2[f"Team2S{i+1}"].update(self.set_info_["frotteam2"][i][0])
+    self.entry_new_2update(window,subwindow,subwindow2)
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
         break
-      elif event == "Submit" or event == " Search ":
+      elif event == " Search ":
+        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
+        window["-play_data-"].update(search_play_data)
+        window[" Edit "].update(disabled=False)
+        pass
+      elif event == "Submit" or event == " Edit ":
         if event == "Submit":
           self.entry_play_data(values["Rally"],values["play_data"])
-        # score1 = list(filter(lambda d: d["Set"]==self.Nset_number,self.score_d))[0]["score1"]
-        # score2 = list(filter(lambda d: d["Set"]==self.Nset_number,self.score_d))[0]["score2"]
-        # subwindow2["Score1"].update(score1)
-        # subwindow2["Score2"].update(score2)
-        # if self.point_d[len(self.point_d)-1]["point1"]:
-        #   subwindow2["Serve1"].update(True)
-        # else:
-        #   subwindow2["Serve2"].update(True)
-        self.entry_new_21(window,subwindow2)
+        elif event == " Edit ":
+          self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
+          window[" Edit "].update(disabled=True)
+        self.entry_new_2update(window,subwindow,subwindow2)
         pass
     window.close()
     subwindow.close()
@@ -296,7 +296,7 @@ self.entry_new_1()
 self.entry_new_2()
 
 self.set_info_
-self.play_d
+
 self.score_d
 
 DtC.play2command(self.play_d)
