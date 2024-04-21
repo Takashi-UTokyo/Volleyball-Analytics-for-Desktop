@@ -24,6 +24,8 @@ class Entry(Window):
     self.Nfrotlist2 = None
     self.Nsubconsition1 = None
     self.Nsubconsition2 = None
+    self.Nscore1 = None
+    self.Nscore2 = None
 
     self.set_result = []
     self.play_d = []
@@ -45,16 +47,19 @@ class Entry(Window):
     }
     pass
 
-  def entry_set_info(self,set_number:str,serveteam:str,frot1:str,frot2:str,frotteam1:list,frotteam2:list):
+  def entry_set_info(self,set_number:str,serveteam:str,frot_number1:str,frot_number2:str,frotlist1:list,frotlist2:list):
     self.Nset_number = int(set_number)
     self.Nserveteam = int(serveteam)
-    self.Nfrot_number1 = int(frot1)
-    self.Nfrot_number2 = int(frot2)
-    self.Nfrotlist1 = [[frotteam1[x],"0"] for x in range(0,6)]
-    self.Nfrotlist2 = [[frotteam2[y],"0"] for y in range(0,6)]
+    self.Nfrot_number1 = int(frot_number1)
+    self.Nfrot_number2 = int(frot_number2)
+    for x in range(0,6):
+      int(frotlist1[x])
+      int(frotlist2[x])
+    self.Nfrotlist1 = [[frotlist1[x],"0"] for x in range(0,6) if x]
+    self.Nfrotlist2 = [[frotlist2[y],"0"] for y in range(0,6) if y]
     self.set_info_ = {
-      "set_number":self.set_number,
-      "serveteam":self.serveteam,
+      "set_number":self.Nset_number,
+      "serveteam":self.Nserveteam,
       "frot1":self.Nfrot_number1,
       "frot2":self.Nfrot_number2,
       "frotteam1":self.Nfrotlist1,
@@ -73,13 +78,14 @@ class Entry(Window):
     self.play_d.append(play_d_)
     self.score_d = DtC.play2score(self.play_d)
     self.point_d = DtC.play2point(self.play_d)
+    
     pass
 
   def complete_set(self):
     set_result_ = {
-      "Set":self.set_number,
-      "score1":self.score1,
-      "score2":self.score2
+      "Set":self.Nset_number,
+      "score1":self.Nscore1,
+      "score2":self.Nscore2
     }
     self.set_result.append(set_result_)
   
