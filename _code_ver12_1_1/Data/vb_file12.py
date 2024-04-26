@@ -1,7 +1,9 @@
 from _code_ver12_1_1.Data.vb_data12 import DataConversion
 import json
 
-DC = DataConversion()
+DtC = DataConversion()
+
+
 
 
 class File:
@@ -12,11 +14,12 @@ class File:
 
   def save_data(self,match_info,set_info,set_result,play_d):
 
-    match_d = DC.play2match(play_d)
+    match_d = DtC.play2match(play_d)
 
-    with open(matchdata_path) as f:
+    with open(self.matchdata_path) as f:
       match_data = json.load(f)
-    if (data := match_data[match_data.index(list(filter(lambda d:d["match_info"]==match_info,match_data))[0])]):
+    if (data0 := list(filter(lambda d:d["match_info"]==match_info,match_data))):
+      data = match_data[match_data.index(data0[0])]
       data["set_info"] = set_info
       data["set_result"] = set_result
       data["match_d"] = match_d
@@ -29,8 +32,8 @@ class File:
       }
       match_data.append(new_match_data)
 
-    with open(matchdata_path,"w") as f:
-      f.dump(match_data,f,indent=2)
+    with open(self.matchdata_path,"w") as f:
+      json.dump(match_data,f,indent=2)
     pass
 
   def open_data(self,match_info):

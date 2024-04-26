@@ -10,6 +10,7 @@ from _code_ver12_1_1.Function.vb_window12 import Window
 from _code_ver12_1_1.Data.vb_data12 import DataConversion
 
 DtC = DataConversion()
+file = File()
 
 class Entry(Window):
   def __init__(self):
@@ -54,6 +55,25 @@ class Entry(Window):
       "team1":team1,
       "team2":team2
     }
+    pass
+
+  def open_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
+    self.season = season
+    self.tournament = tournament
+    self.date = date
+    self.team1 = team1
+    self.team2 = team2
+    self.match_info = {
+      "season":season,
+      "tournament":tournament,
+      "date":date,
+      "team1":team1,
+      "team2":team2
+    }
+    self.match_data_ = file.open_data(self.match_info)
+    self.set_info = self.match_data_["set_info"]
+    self.set_result = self.match_data_["set_result"]
+    self.match_d = self.match_data_["match_d"]
     pass
 
   def entry_set_info(self,set_number:str,serveteam:str,frot_number1:str,frot_number2:str,frotlist1:list,frotlist2:list):
@@ -160,7 +180,10 @@ class Entry(Window):
       "score1":self.Nscore1,
       "score2":self.Nscore2
     }
-    self.set_result.append(set_result_)
+    if (result :=list(filter(lambda d: d["Set"]==self.Nset_number,self.set_result))):
+      self.set_result[self.set_result.index(result[0])] = set_result_
+    else:
+      self.set_result.append(set_result_)
 
   def search_play_data(self,edit_set_number,edit_rally_number):
     search_play_data = self.play_d[self.play_d.index(list(filter(lambda d: d["Set"] == edit_set_number and d["Rally"]==edit_rally_number,self.play_d))[0])]
@@ -220,6 +243,7 @@ class Entry_new(Entry):
     window.close()
     pass
 
+
   def entry_new_1(self):
     window = self.Set_Info_window()
     while True:
@@ -278,16 +302,54 @@ class Entry_new(Entry):
       elif event == "Submit" or event == " Edit ":
         if event == "Submit":
           self.entry_play_data(values["Rally"],values["play_data"])
+          window["Save"].update(disabled=False)
         elif event == " Edit ":
           self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
           window[" Edit "].update(disabled=True)
         self.entry_new_2update(window,subwindow,subwindow2)
         pass
+      elif event == "Save":
+        self.complete_set()
+        file.save_data(self.match_info,self.set_info,self.set_result,self.play_d)
+        pass
+      elif event == " Exit " or event == " Next ":
+        if event == " Exit ":
+          self.complete_set()
+        elif event ==  " Next ":
+          self.complete_set
+        break
     window.close()
     subwindow.close()
     subwindow2.close()
+    pass
 
-    
+  def entry_exi_0(self):
+    window = self.Info_window2()
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break
+      elif event == "Search":
+        self.open_match_info(values["Season"],values["Tournament"],values["Date"],values["Team1"],values["Team2"])
+        window[" Continue "].update(disabled=False)
+        window["FileFound"].update("Data Found !")
+        try:
+          self.player_index1 = file.open_index(values["Season"],values["Tournament"],values["Team1"])
+          self.team1_ab = self.player_index1["abbreviation"]
+          window["Team1ab"].update(f"Team1 : {self.team1_ab}")
+        except:
+          pass
+        try:
+          self.player_index2 = file.open_index(values["Season"],values["Tournament"],values["Team2"])
+          self.team2_ab = self.player_index2["abbreviation"]
+          window["Team2ab"].update(f"Team2 : {self.team2_ab}")
+        except:
+          pass
+        pass
+      elif event == " Continue ":
+        break
+    window.close()
+    pass
       
 self = Entry_new()
 
