@@ -338,12 +338,14 @@ class Entry_new(Entry):
           self.team1_ab = self.player_index1["abbreviation"]
           window["Team1ab"].update(f"Team1 : {self.team1_ab}")
         except:
+          window["Team1ab"].update(f"Team1 : Not Found")
           pass
         try:
           self.player_index2 = file.open_index(values["Season"],values["Tournament"],values["Team2"])
           self.team2_ab = self.player_index2["abbreviation"]
           window["Team2ab"].update(f"Team2 : {self.team2_ab}")
         except:
+          window["Team2ab"].update("Team2 : Not Found")
           pass
         pass
       elif event == " Continue ":
