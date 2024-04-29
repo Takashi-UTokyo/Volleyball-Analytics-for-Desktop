@@ -184,6 +184,20 @@ class DataConversion:
     match_d = "!".join(set_d_3)
     return match_d
 
+  def match2play(self,match_d: list) -> list:
+    play_d = []
+    set_d_ = match_d.split("!")
+    for set_number0 in range(len(set_d_)):
+      play_d_1 = set_d_[set_number0].split(".")
+      for rally_number0 in range(len(play_d_1)):
+        play_d_ = {
+          "Set":set_number0+1,
+          "Rally":rally_number0+1,
+          "play_data":play_d_1[rally_number0]
+        }
+        play_d.append(play_d_)
+    return play_d
+
 
 
 play_d = [
@@ -198,5 +212,8 @@ play_d = [
   {"Set":2,"Rally":1,"play_data":"/12 sa 89/12 ra 32:8 ta 11:2 apa 66"}
   ]
 
+
 self = DataConversion()
 self.play2point(play_d)
+
+match_d = self.play2match(play_d)

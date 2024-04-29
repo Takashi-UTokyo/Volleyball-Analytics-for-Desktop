@@ -39,8 +39,9 @@ class File:
   def open_data(self,match_info):
     with open(self.matchdata_path) as f:
       match_datalist = json.load(f)
-    match_data = match_datalist[match_datalist.index(list(filter(lambda d:d["match_info"]==match_info,match_datalist))[0])]
-    return match_data
+    if (datalist := list(filter(lambda d:d ["match_info"]==match_info,match_datalist))):
+      match_data = match_datalist[match_datalist.index(datalist[0])]
+      return match_data
 
   def search_data(self,match_infolist):
     pass
