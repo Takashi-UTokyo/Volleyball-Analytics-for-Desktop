@@ -94,6 +94,7 @@ class Entry(Window):
     self.Nsubcondition2 = Nset_result["subcondition2"]
     self.play_d = DtC.match2play(self.match_d)
     self.point_d = DtC.play2point(self.play_d)
+    self.Nrally_number = self.play_d[len(self.play_d)-1]["Rally"]+1
     pass
 
 
@@ -332,7 +333,7 @@ class Entry_new(Entry):
         elif event == " Edit ":
           self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
           window[" Edit "].update(disabled=True)
-        self.entry_new_2update(window,subwindow,subwindow2)
+        self.entry_update(window,subwindow,subwindow2)
         pass
       elif event == "Save":
         self.complete_set()
@@ -342,7 +343,7 @@ class Entry_new(Entry):
         if event == " Exit ":
           self.complete_set()
         elif event ==  " Next ":
-          self.complete_set
+          self.complete_set()
         break
     window.close()
     subwindow.close()
@@ -400,14 +401,46 @@ class Entry_exi(Entry):
     pass
 
 
-def entry_exi_1(self):
-  subwindow = self.entry_sub(450,100)
-  subwindow2 = self.entry_sub2(450,320)
-  window = self.entry_main(600,320)
-  self.entry_update(window,subwindow,subwindow2)
-  pass
+  def entry_exi_1(self):
+    subwindow = self.entry_sub(450,100)
+    subwindow2 = self.entry_sub2(450,320)
+    window = self.entry_main(600,320)
+    self.entry_update(window,subwindow,subwindow2)
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break
+      elif event == " Search ":
+        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
+        window["-play_data-"].update(search_play_data)
+        window[" Edit "].update(disabled=False)
+        pass
+      elif event == "Submit" or event == " Edit ":
+        if event == "Submit":
+          self.entry_play_data(values["Rally"],values["play_data"])
+          window["Save"].update(disabled=False)
+        elif event == " Edit ":
+          self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
+          window[" Edit "].update(disabled=True)
+        self.entry_update(window,subwindow,subwindow2)
+        pass
+      elif event == "Save":
+        self.complete_set()
+        file.save_data(self.match_info,self.set_info,self.set_result,self.play_d)
+        pass
+      elif event == " Exit " or event == " Next ":
+        if event == " Exit ":
+          self.complete_set()
+        elif event ==  " Next ":
+          self.complete_set()
+        break
+    window.close()
+    subwindow.close()
+    subwindow2.close()
+    pass
       
 
 self = Entry_exi()
+self.entry_exi_0()
 self.entry_exi_1()
 
