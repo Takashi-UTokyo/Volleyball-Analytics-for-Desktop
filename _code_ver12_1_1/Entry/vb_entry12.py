@@ -16,7 +16,7 @@ class Entry(Window):
   def __init__(self):
     self.set_info = []
     # 現在セットの情報
-    self.set_info_ = None
+    self.Nset_info = None
     self.Nset_number = None
     self.Nserveteam = None
     self.Nrot_d = {
@@ -41,6 +41,7 @@ class Entry(Window):
     self.match_d = None
     self.play_d = []
     self.point_d = None
+    self.transition = False
     pass
 
   def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
@@ -222,7 +223,7 @@ class Entry(Window):
       else:
         subwindow2["Serve2"].update(True)
     else:
-      subwindow2[f"Serve{self.set_info_["serveteam"]}"].update(True)
+      subwindow2[f"Serve{self.Nset_info["serveteam"]}"].update(True)
     pass
 
 
@@ -245,6 +246,68 @@ class Entry(Window):
       subwindow2[f"Team2S{i+1}"].update(self.Nrotcondition2[i])
     window["play_data"].update("")
     subwindow["-LOGpld-"].update(self.play_d)
+    pass
+
+  def main_entry_set(self):
+    window = self.Set_Info_window()
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break
+      elif event == " Enter ":
+        try:
+          if values["Team1"]:
+            serveteam = 1
+          elif values["Team2"]:
+            serveteam = 2
+          self.entry_set_info(values["Set"],serveteam,values["Rot1"],values["Rot2"],[values["Team1S1"],values["Team1S2"],values["Team1S3"],values["Team1S4"],values["Team1S5"],values["Team1S6"]],[values["Team2S1"],values["Team2S2"],values["Team2S3"],values["Team2S4"],values["Team2S5"],values["Team2S6"]])
+        except:
+          window["msg"].update("Not Created")
+          continue
+        break
+    window.close()
+    self.Nrally_number = 1
+    pass
+
+
+  def main_entry_main(self):
+    subwindow = self.entry_sub(450,100)
+    subwindow2 = self.entry_sub2(450,320)
+    window = self.entry_main(600,320)
+    self.entry_update(window,subwindow,subwindow2)
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break
+      elif event == " Search ":
+        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
+        window["-play_data-"].update(search_play_data)
+        window[" Edit "].update(disabled=False)
+        pass
+      elif event == "Submit" or event == " Edit ":
+        if event == "Submit":
+          self.entry_play_data(values["Rally"],values["play_data"])
+          window["Save"].update(disabled=False)
+        elif event == " Edit ":
+          self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
+          window[" Edit "].update(disabled=True)
+        self.entry_update(window,subwindow,subwindow2)
+        pass
+      elif event == "Save":
+        self.complete_set()
+        file.save_data(self.match_info,self.set_info,self.set_result,self.play_d)
+        pass
+      elif event == " Exit " or event == " Next ":
+        if event == " Exit ":
+          self.complete_set()
+          self.transition = True
+        elif event ==  " Next ":
+          self.complete_set()
+          self.transition=False
+        break
+    window.close()
+    subwindow.close()
+    subwindow2.close()
     pass
 
 
@@ -292,63 +355,13 @@ class Entry_new(Entry):
     pass
 
   def entry_new_1(self):
-    window = self.Set_Info_window()
-    while True:
-      event,values = window.read()
-      if event == sg.WIN_CLOSED:
-        break
-      elif event == " Enter ":
-        try:
-          if values["Team1"]:
-            serveteam = 1
-          elif values["Team2"]:
-            serveteam = 2
-          self.entry_set_info(values["Set"],serveteam,values["Rot1"],values["Rot2"],[values["Team1S1"],values["Team1S2"],values["Team1S3"],values["Team1S4"],values["Team1S5"],values["Team1S6"]],[values["Team2S1"],values["Team2S2"],values["Team2S3"],values["Team2S4"],values["Team2S5"],values["Team2S6"]])
-        except:
-          window["msg"].update("Not Created")
-          continue
-        break
-    window.close()
+    while self.transition==False:
+      self.main_entry_set()
+      self.main_entry_main()
     pass
 
 
-  def entry_new_2(self):
-    subwindow = self.entry_sub(450,100)
-    subwindow2 = self.entry_sub2(450,320)
-    window = self.entry_main(600,320)
-    self.entry_update(window,subwindow,subwindow2)
-    while True:
-      event,values = window.read()
-      if event == sg.WIN_CLOSED:
-        break
-      elif event == " Search ":
-        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
-        window["-play_data-"].update(search_play_data)
-        window[" Edit "].update(disabled=False)
-        pass
-      elif event == "Submit" or event == " Edit ":
-        if event == "Submit":
-          self.entry_play_data(values["Rally"],values["play_data"])
-          window["Save"].update(disabled=False)
-        elif event == " Edit ":
-          self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
-          window[" Edit "].update(disabled=True)
-        self.entry_update(window,subwindow,subwindow2)
-        pass
-      elif event == "Save":
-        self.complete_set()
-        file.save_data(self.match_info,self.set_info,self.set_result,self.play_d)
-        pass
-      elif event == " Exit " or event == " Next ":
-        if event == " Exit ":
-          self.complete_set()
-        elif event ==  " Next ":
-          self.complete_set()
-        break
-    window.close()
-    subwindow.close()
-    subwindow2.close()
-    pass
+
 
 class Entry_exi(Entry):
   def __init__(self):
@@ -400,47 +413,16 @@ class Entry_exi(Entry):
     window.close()
     pass
 
-
   def entry_exi_1(self):
-    subwindow = self.entry_sub(450,100)
-    subwindow2 = self.entry_sub2(450,320)
-    window = self.entry_main(600,320)
-    self.entry_update(window,subwindow,subwindow2)
-    while True:
-      event,values = window.read()
-      if event == sg.WIN_CLOSED:
-        break
-      elif event == " Search ":
-        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
-        window["-play_data-"].update(search_play_data)
-        window[" Edit "].update(disabled=False)
-        pass
-      elif event == "Submit" or event == " Edit ":
-        if event == "Submit":
-          self.entry_play_data(values["Rally"],values["play_data"])
-          window["Save"].update(disabled=False)
-        elif event == " Edit ":
-          self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
-          window[" Edit "].update(disabled=True)
-        self.entry_update(window,subwindow,subwindow2)
-        pass
-      elif event == "Save":
-        self.complete_set()
-        file.save_data(self.match_info,self.set_info,self.set_result,self.play_d)
-        pass
-      elif event == " Exit " or event == " Next ":
-        if event == " Exit ":
-          self.complete_set()
-        elif event ==  " Next ":
-          self.complete_set()
-        break
-    window.close()
-    subwindow.close()
-    subwindow2.close()
+    self.main_entry_main()
+    while self.transition==False:
+      self.main_entry_set()
+      self.main_entry_main()
     pass
-      
 
-self = Entry_exi()
-self.entry_exi_0()
-self.entry_exi_1()
 
+
+
+self = Entry_new()
+self.entry_new_0()
+self.entry_new_1()
