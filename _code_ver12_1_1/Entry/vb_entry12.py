@@ -421,8 +421,56 @@ class Entry_exi(Entry):
     pass
 
 
+class Index(Window):
+  def __init__(self):
+    self.season = None
+    self.tournament = None
+    self.team = None
+
+    self.Nplayer_number = 0
+    self.Nplayer_position = None
+    self.Nplayer_name = None
+    self.player_index = None
+    pass
+
+  def edition_index(self):
+    window = self.index_window()
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED or event == "Exit":
+        break
+      elif event == "Search":
+        try:
+          self.player_index = file.open_index(values["season"],values["tournament"],values["team"])
+        except:
+          pass
+        else:
+          self.season = values["season"]
+          self.tournament = values["tournament"]
+          self.team = values["team"]
+          self.team_ab = self.player_index["abbreviation"]
+          player_data = self.player_index["player_data"]
+          index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
+          window["index_table"].update(index_content)
+          file.set_index(self.season,self.tournament,self.team,self.team_ab)
+          window["team_ab"].update(self.team_ab)
+          
+        pass
+      elif event == "Submit":
+        self.Nplayer_number = int(values["player_number"])
+        self.Nplayer_position = values["player_position"]
+        self.Nplayer_name = values["player_name"]
+        file.append_player(self.Nplayer_number,self.Nplayer_position,self.Nplayer_name)
+        self.player_index = file.player_index
+        player_data = self.player_index["player_data"]
+        index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
+        window["index_table"].update(index_content)
+        pass
+    window.close()
+    pass
 
 
-self = Entry_new()
-self.entry_new_0()
-self.entry_new_1()
+
+
+self = Index()
+self.edition_index()

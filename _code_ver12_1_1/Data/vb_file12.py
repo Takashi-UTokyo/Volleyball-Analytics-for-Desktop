@@ -10,6 +10,19 @@ class File:
   def __init__(self):
     self.matchdata_path = r"c:\Volleyball12\matchdata.json"
     self.index_path = r"c:\Volleyball12\index.json"
+
+    self.season = None
+    self.tournament = None
+    self.team = None
+    self.team_ab = None
+    self.player_index = None
+    pass
+
+  def set_index(self,season,tournament,team,team_ab):
+    self.season = season
+    self.tournament = tournament
+    self.team = team
+    self.team_ab = team_ab
     pass
 
   def save_data(self,match_info,set_info,set_result,play_d):
@@ -46,7 +59,7 @@ class File:
   def search_data(self,match_infolist):
     pass
 
-  def set_index(self,season,tournament,team,team_ab):
+  def create_index(self,season,tournament,team,team_ab):
     self.season = season
     self.tournament = tournament
     self.team = team
@@ -77,6 +90,7 @@ class File:
     }
     if not list(filter(lambda d:d==player_data,new_index["player_data"])):
       new_index["player_data"].append(player_data)
+      self.player_index = new_index
       with open(self.index_path,"w") as f:
         json.dump(_index,f,indent=2)
     pass
@@ -93,7 +107,7 @@ self.season = "2023-24"
 self.tournament = "Italian Serie A1"
 self.team = "Allianz Milano"
 self.team_ab = "MIL"
-self.set_index(self.season,self.tournament,self.team,self.team_ab)
+self.create_index(self.season,self.tournament,self.team,self.team_ab)
 player_number = 1
 player_position = "OH"
 player_name = "Matey Kaziyski"
