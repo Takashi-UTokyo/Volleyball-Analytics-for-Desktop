@@ -44,6 +44,7 @@ class Entry(Window0):
     self.play_d = []
     self.point_d = None
     self.transition = False
+    self.shutdown = False
     pass
 
   def entry_match_info(self,season:str,tournament:str,date:str,team1:str,team2:str):
@@ -255,6 +256,7 @@ class Entry(Window0):
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
+        self.shutdown = True
         break
       elif event == " Enter ":
         try:
@@ -280,6 +282,7 @@ class Entry(Window0):
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
+        self.shutdown = True
         break
       elif event == " Search ":
         search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
@@ -324,6 +327,7 @@ class Entry_new(Entry):
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
+        self.shutdown = True
         break
       elif event == "Set":
         self.entry_match_info(values["Season"],values["Tournament"],values["Date"],values["Team1"],values["Team2"])
@@ -341,7 +345,7 @@ class Entry_new(Entry):
           pass
         try:
           self.player_index2 = file.open_index(self.season,self.tournament,self.team2)
-          self.team2_ab = self.player_index2["abbreaviation"]
+          self.team2_ab = self.player_index2["abbreviation"]
           window["Team2ab"].update(f"Team2 : {self.team2_ab}")
         except:
           self.team2_ab = option.option("Team2 Not Found. New Create Team2","Team2 abbreviation : ")
@@ -359,13 +363,16 @@ class Entry_new(Entry):
   def entry_new_1(self):
     while self.transition==False:
       self.main_entry_set()
+      if self.shutdown:
+        break
       self.main_entry_main()
     pass
 
   def exe(self):
     self.entry_new_0()
+    if self.shutdown:
+      return
     self.entry_new_1()
-    pass
 
 
 
@@ -379,6 +386,7 @@ class Entry_exi(Entry):
     while True:
       event,values = window.read()
       if event == sg.WIN_CLOSED:
+        self.shutdown = True
         break
       elif event == "Search":
         try:
@@ -424,13 +432,16 @@ class Entry_exi(Entry):
     self.main_entry_main()
     while self.transition==False:
       self.main_entry_set()
+      if self.shutdown:
+        break
       self.main_entry_main()
     pass
 
   def exe(self):
     self.entry_exi_0()
+    if self.shutdown:
+      return
     self.entry_exi_1()
-    pass
 
 
 class Index(Window0):
@@ -509,5 +520,5 @@ class Index(Window0):
     self.edition_index()
     pass
 
-ind = Index()
-ind.exe()
+new = Entry_new()
+new.exe()
