@@ -362,6 +362,11 @@ class Entry_new(Entry):
       self.main_entry_main()
     pass
 
+  def exe(self):
+    self.entry_new_0()
+    self.entry_new_1()
+    pass
+
 
 
 
@@ -422,6 +427,11 @@ class Entry_exi(Entry):
       self.main_entry_main()
     pass
 
+  def exe(self):
+    self.entry_exi_0()
+    self.entry_exi_1()
+    pass
+
 
 class Index(Window0):
   def __init__(self):
@@ -442,20 +452,31 @@ class Index(Window0):
       if event == sg.WIN_CLOSED or event == "Exit":
         break
       elif event == "Search":
-        try:
-          self.player_index = file.open_index(values["season"],values["tournament"],values["team"])
-        except:
-          pass
+        self.player_index = file.open_index(values["season"],values["tournament"],values["team"])
+        if self.player_index:
+          try:
+            self.season = values["season"]
+            self.tournament = values["tournament"]
+            self.team = values["team"]
+            self.team_ab = self.player_index["abbreviation"]
+            player_data = self.player_index["player_data"]
+            index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
+            window["index_table"].update(index_content)
+            file.set_index(self.season,self.tournament,self.team,self.team_ab)
+            window["team_ab"].update(self.team_ab)
+          except:
+            option.notion("Something Wrong")
         else:
-          self.season = values["season"]
-          self.tournament = values["tournament"]
-          self.team = values["team"]
-          self.team_ab = self.player_index["abbreviation"]
-          player_data = self.player_index["player_data"]
-          index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
-          window["index_table"].update(index_content)
-          file.set_index(self.season,self.tournament,self.team,self.team_ab)
-          window["team_ab"].update(self.team_ab)
+          res = option.check("Team Not Found","New Create ?")
+          if res == "OK":
+            team_ab = option.option("New Team Abbreviation","Team_ab : ")
+            file.create_index(values["season"],values["tournament"],values["team"],team_ab)
+            self.season = values["season"]
+            self.tournament = values["tournament"]
+            self.team = values["team"]
+            self.team_ab = team_ab
+            file.set_index(self.season,self.tournament,self.team,self.team_ab)
+            window["team_ab"].update(self.team_ab)
         pass
       elif event == "Submit":
         try:
@@ -484,11 +505,9 @@ class Index(Window0):
     window.close()
     pass
 
+  def exe(self):
+    self.edition_index()
+    pass
 
-
-new = Entry_new()
-new.entry_new_0()
-new.entry_new_1()
-exi = Entry_exi()
-exi.entry_exi_0()
-exi.entry_exi_1()
+ind = Index()
+ind.exe()

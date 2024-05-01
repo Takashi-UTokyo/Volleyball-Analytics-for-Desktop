@@ -89,7 +89,7 @@ class File:
       "position":player_position,
       "name":player_name
     }
-    if not (check := list(filter(lambda d:d==player_data,player_index["player_data"]))):
+    if not (check := list(filter(lambda d:d["number"]==player_data["number"] or d["name"]==player_data["name"],player_index["player_data"]))):
       player_index["player_data"].append(player_data)
     else:
       res = option.check("Player Already Existed","Update ?")
@@ -106,7 +106,7 @@ class File:
     with open(self.index_path) as f:
       _index = json.load(f)
     player_index = _index[_index.index(list(filter(lambda d:d["season"]==self.season and d["tournament"]==self.tournament and d["team"]==self.team,_index))[0])]
-    player_data = player_index[0]["player_data"]
+    player_data = player_index["player_data"]
     del_player_data = {
       "number":player_number,
       "position":player_position,
