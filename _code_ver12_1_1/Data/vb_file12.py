@@ -1,8 +1,9 @@
 from _code_ver12_1_1.Data.vb_data12 import DataConversion
 import json
+from _code_ver12_1_1.Function.vb_option12 import Option
 
 DtC = DataConversion()
-
+option = Option()
 
 
 
@@ -82,17 +83,39 @@ class File:
   def append_player(self,player_number,player_position,player_name):
     with open(self.index_path) as f:
       _index = json.load(f)
-    new_index = _index[_index.index(list(filter(lambda d:d["season"]==self.season and d["tournament"]==self.tournament and d["team"]==self.team,_index))[0])]
+    player_index = _index[_index.index(list(filter(lambda d:d["season"]==self.season and d["tournament"]==self.tournament and d["team"]==self.team,_index))[0])]
     player_data = {
       "number":player_number,
       "position":player_position,
       "name":player_name
     }
-    if not list(filter(lambda d:d==player_data,new_index["player_data"])):
-      new_index["player_data"].append(player_data)
-      self.player_index = new_index
-      with open(self.index_path,"w") as f:
-        json.dump(_index,f,indent=2)
+    if not (check := list(filter(lambda d:d==player_data,player_index["player_data"]))):
+      player_index["player_data"].append(player_data)
+    else:
+      res = option.check("Player Already Existed","Update ?")
+      if res == "OK":
+        player_index["player_data"][player_index["player_data"].index(check[0])] = player_data
+      else:
+        return
+    self.player_index = player_index
+    with open(self.index_path,"w") as f:
+      json.dump(_index,f,indent=2)
+    pass
+
+  def delete_player(self,player_number,player_position,player_name):
+    with open(self.index_path) as f:
+      _index = json.load(f)
+    player_index = _index[_index.index(list(filter(lambda d:d["season"]==self.season and d["tournament"]==self.tournament and d["team"]==self.team,_index))[0])]
+    player_data = player_index[0]["player_data"]
+    del_player_data = {
+      "number":player_number,
+      "position":player_position,
+      "name":player_name
+    }
+    player_data.remove(del_player_data)
+    self.player_index = player_index
+    with open(self.index_path,"w") as f:
+      json.dump(_index,f,indent=2)
     pass
 
   def open_index(self,season,tournament,team):
@@ -101,18 +124,6 @@ class File:
     if (check := list(filter(lambda d: d["season"]==season and d["tournament"]==tournament and d["team"]==team,_index))):
       _index0 = check[0]
       return _index0
+    
 
 self = File()
-self.season = "2023-24"
-self.tournament = "Italian Serie A1"
-self.team = "Allianz Milano"
-self.team_ab = "MIL"
-self.create_index(self.season,self.tournament,self.team,self.team_ab)
-player_number = 1
-player_position = "OH"
-player_name = "Matey Kaziyski"
-self.append_player(player_number,player_position,player_name)
-player_number = 14
-player_position = "OH"
-player_name = "Yuki Ishikawa"
-self.append_player(player_number,player_position,player_name)

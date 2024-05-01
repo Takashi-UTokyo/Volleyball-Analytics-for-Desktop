@@ -6,7 +6,7 @@ import PySimpleGUI as sg
 import pandas as pd
 
 from _code_ver12_1_1.Data.vb_file12 import File
-from _code_ver12_1_1.Function.vb_window12 import Window
+from _code_ver12_1_1.Function.vb_window12 import Window0
 from _code_ver12_1_1.Data.vb_data12 import DataConversion
 from _code_ver12_1_1.Function.vb_option12 import Option
 
@@ -14,7 +14,7 @@ DtC = DataConversion()
 file = File()
 option = Option()
 
-class Entry(Window):
+class Entry(Window0):
   def __init__(self):
     self.set_info = []
     # 現在セットの情報
@@ -423,7 +423,7 @@ class Entry_exi(Entry):
     pass
 
 
-class Index(Window):
+class Index(Window0):
   def __init__(self):
     self.season = None
     self.tournament = None
@@ -456,16 +456,29 @@ class Index(Window):
           window["index_table"].update(index_content)
           file.set_index(self.season,self.tournament,self.team,self.team_ab)
           window["team_ab"].update(self.team_ab)
-          
         pass
       elif event == "Submit":
-        self.Nplayer_number = int(values["player_number"])
-        self.Nplayer_position = values["player_position"]
-        self.Nplayer_name = values["player_name"]
-        file.append_player(self.Nplayer_number,self.Nplayer_position,self.Nplayer_name)
+        try:
+          self.Nplayer_number = int(values["player_number"])
+          self.Nplayer_position = values["player_position"]
+          self.Nplayer_name = values["player_name"]
+        except:
+          pass
+        try:
+          file.append_player(self.Nplayer_number,self.Nplayer_position,self.Nplayer_name)
+          self.player_index = file.player_index
+          player_data = self.player_index["player_data"]
+          index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
+          window["index_table"].update(index_content)
+        except:
+          pass
+        pass
+      elif event == "Delete":
+        delete = player_data[values["index_table"][0]]
+        file.delete_player(delete["number"],delete["position"],delete["name"])
         self.player_index = file.player_index
         player_data = self.player_index["player_data"]
-        index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
+        index_content = [[int(player_data[y]["number"]),player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
         window["index_table"].update(index_content)
         pass
     window.close()
@@ -473,6 +486,9 @@ class Index(Window):
 
 
 
-
-self = Index()
-self.edition_index()
+new = Entry_new()
+new.entry_new_0()
+new.entry_new_1()
+exi = Entry_exi()
+exi.entry_exi_0()
+exi.entry_exi_1()
