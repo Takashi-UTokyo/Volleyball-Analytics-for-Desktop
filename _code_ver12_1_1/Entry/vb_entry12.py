@@ -8,9 +8,11 @@ import pandas as pd
 from _code_ver12_1_1.Data.vb_file12 import File
 from _code_ver12_1_1.Function.vb_window12 import Window
 from _code_ver12_1_1.Data.vb_data12 import DataConversion
+from _code_ver12_1_1.Function.vb_option12 import Option
 
 DtC = DataConversion()
 file = File()
+option = Option()
 
 class Entry(Window):
   def __init__(self):
@@ -331,7 +333,7 @@ class Entry_new(Entry):
           self.team1_ab = self.player_index1["abbreviation"]
           window["Team1ab"].update(f"Team1 : {self.team1_ab}")
         except:
-          self.team1_ab = self.option("Team1 Not Found. New Create Team1","Team1 abbreviation : ")
+          self.team1_ab = option.option("Team1 Not Found. New Create Team1","Team1 abbreviation : ")
           if self.team1_ab:
             window["Team1ab"].update(f"Team1 : {self.team1_ab}")
           else:
@@ -342,7 +344,7 @@ class Entry_new(Entry):
           self.team2_ab = self.player_index2["abbreaviation"]
           window["Team2ab"].update(f"Team2 : {self.team2_ab}")
         except:
-          self.team2_ab = self.option("Team2 Not Found. New Create Team2","Team2 abbreviation : ")
+          self.team2_ab = option.option("Team2 Not Found. New Create Team2","Team2 abbreviation : ")
           if self.team2_ab:
             window["Team2ab"].update(f"Team2 : {self.team2_ab}")
           else:
@@ -384,7 +386,7 @@ class Entry_exi(Entry):
             self.team1_ab = self.player_index1["abbreviation"]
             window["Team1ab"].update(f"Team1 : {self.team1_ab}")
           except:
-            self.team1_ab = self.option("Team1 Not Found. New Create Team1","Team1 abbreviation : ")
+            self.team1_ab = option.option("Team1 Not Found. New Create Team1","Team1 abbreviation : ")
             if self.team1_ab:
               window["Team1ab"].update(f"Team1 : {self.team1_ab}")
             else:
@@ -395,7 +397,7 @@ class Entry_exi(Entry):
             self.team2_ab = self.player_index2["abbreviation"]
             window["Team2ab"].update(f"Team2 : {self.team2_ab}")
           except:
-            self.team2_ab = self.option("Team2 Not Found. New Create Team2","Team2 abbreviation : ")
+            self.team2_ab = option.option("Team2 Not Found. New Create Team2","Team2 abbreviation : ")
             if self.team2_ab:
               window["Team2ab"].update(f"Team2 : {self.team2_ab}")
             else:
