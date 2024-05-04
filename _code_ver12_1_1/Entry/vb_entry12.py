@@ -45,7 +45,7 @@ class Entry(Window0):
     self.match_d = []
     self.play_d = []
     self.point_d = []
-    self.sub_d = []
+    self.Nsub_d = []
     self.transition = False
     self.shutdown = False
     pass
@@ -99,7 +99,7 @@ class Entry(Window0):
     self.Nscore2 = Nset_result["score2"]
     self.Nfsubcondition1 = Nset_result["fsubcondition1"]
     self.Nfsubcondition2 = Nset_result["fsubcondition2"]
-    self.sub_d = Nset_result["sub_d"]
+    self.Nsub_d = Nset_result["sub_d"]
     self.play_d = DtC.match2play(self.match_d)
     self.point_d = DtC.play2point(self.play_d)
     self.Nrally_number = self.play_d[len(self.play_d)-1]["Rally"]+1
@@ -127,6 +127,7 @@ class Entry(Window0):
     self.set_info.append(self.Nset_info)
     self.Nfsubcondition1 = [0,0,0,0,0,0]
     self.Nfsubcondition2 = [0,0,0,0,0,0]
+    self.Nsub_d = []
     pass
 
   def entry_play_data(self,rally_number,play_data):
@@ -147,7 +148,7 @@ class Entry(Window0):
       "score2":self.Nscore2,
       "fsubcondition1":self.Nfsubcondition1,
       "fsubcondition2":self.Nfsubcondition2,
-      "sub_d":self.sub_d
+      "sub_d":self.Nsub_d
     }
     if (result :=list(filter(lambda d: d["Set"]==self.Nset_number,self.set_result))):
       self.set_result[self.set_result.index(result[0])] = set_result_
@@ -286,6 +287,8 @@ class Entry(Window0):
   
   def main_entry_sub(self):
     window = self.substitution_window()
+    window["Set"].update(self.Nset_number)
+    window["Rally"].update(self.Nrally_number)
     rotcondition = [0,self.Nrotcondition1,self.Nrotcondition2]
     frotlist = [0,self.Nfrotlist1,self.Nfrotlist2]
     subcondition = [0,self.Nfsubcondition1,self.Nfsubcondition2]
@@ -316,7 +319,8 @@ class Entry(Window0):
           "Out":values[f"Out{i}"],
           "In":values[f"In{i}"]
         }
-        self.sub_d.append(sub_d_)
+        self.Nsub_d.append(sub_d_)
+        option.notion("Substitution success")
         pass
     window.close()
     pass
@@ -344,6 +348,7 @@ class Entry(Window0):
         elif event == " Edit ":
           self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
           window[" Edit "].update(disabled=True)
+          window["-play_data-"].update()
         self.entry_update(window,subwindow,subwindow2)
         pass
 
@@ -555,7 +560,10 @@ class Index(Window0):
           player_data = self.player_index["player_data"]
           index_content = [[player_data[y]["number"],player_data[y]["position"],player_data[y]["name"]] for y in range(len(player_data))]
           window["index_table"].update(index_content)
+          window["player_number"].update()
+          window["player_name"].update()
         except:
+          option.notion("Player info failed")
           pass
         pass
       elif event == "Delete":
@@ -573,6 +581,27 @@ class Index(Window0):
     self.edition_index()
     pass
 
-self = Entry_new()
-self.exe()
+new = Entry_new()
+new.exe()
 
+new.Nfrotlist1[1][1] = "6"
+new.sub_d = [
+  {
+    "Set":1,
+    "Rally":36,
+    "team":1,
+    "Out":"24",
+    "In":"6"
+  },
+  {
+    "Set":1,
+    "Rally":45,
+    "team":1,
+    "Out":"6",
+    "In":"24"
+  }
+]
+
+new.complete_set()
+new.set_result
+file.save_data(new.match_info,new.set_info,new.set_result,new.play_d)
