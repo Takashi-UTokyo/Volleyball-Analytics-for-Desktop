@@ -9,20 +9,20 @@ class DataConversion:
     else:
       zone0 = [zone]
     zone01 = []
-    for zone00 in zone0:
-      if type(zone00) is str:
-        if "a" in zone00:
+    for zone0_ in zone0:
+      if type(zone0_) is str:
+        if "a" in zone0_:
           zone1 = -1
-        elif "b" in zone00:
+        elif "b" in zone0_:
           zone1 = -2
-        elif "c" in zone00:
+        elif "c" in zone0_:
           zone1 = -3
         else:
-          zone1 = zone00[0]
-        zone2 = zone00[1:]
+          zone1 = zone0_[0]
+        zone2 = zone0_[1:]
         zone3 = int(str(zone1)+zone2)
-      elif type(zone00) is int:
-        zone3 = zone00
+      elif type(zone0_) is int:
+        zone3 = zone0_
       zone01.append(zone3)
     if type(zone) is str:
       zone01 = zone01[0]
@@ -197,6 +197,49 @@ class DataConversion:
         }
         play_d.append(play_d_)
     return play_d
+  
+  def log_action(self,action):
+    if action == "s":
+      log_action = "サーブ"
+    elif action == "a":
+      log_action = "アタック"
+    elif action == "t":
+      log_action = "トス"
+    elif action == "b":
+      log_action = "ブロック"
+    elif action == "r":
+      log_action = "レセプション"
+    elif action == "d":
+      log_action = "ディグ"
+    elif action == "e":
+      log_action = "エラー"
+    elif action == "o":
+      log_action = "返球"
+    return log_action
+  
+  def play2log(self,play_d,cls):
+    command_d = self.play2command(play_d)
+    point_d = self.play2point(play_d)
+    log = []
+    command_d_ = command_d[1]
+    for command_d_ in command_d:
+      if command_d_["transition"]%2==1:
+        log_0 = f" {cls.team1_ab} : "
+      elif command_d_["transition"]%2==0:
+        log_0 = f" {cls.team2_ab} : "
+      if command_d_["No"]:
+        log_1 = f"  {command_d_["No"]}番の{self.log_action(command_d_["action"])}"
+        log.append(log_0)
+        log.append(log_1)
+      if "p" in command_d_["result"] or "e" in command_d_["result"]:
+        point_d_ = list(filter(lambda d: d["Set"]==command_d_["Set"] and d["Rally"]==command_d_["Rally"],point_d))[0]
+        if point_d_["point1"]:
+          log_2 = f"{cls.team1_ab}のポイント"
+          log.append(log_2)
+        elif point_d_["point2"]:
+          log_2 = f"{cls.team2_ab}のポイント"
+          log.append(log_2)
+    return log
 
 
 
@@ -209,11 +252,23 @@ play_d = [
   {"Set":1,"Rally":6,"play_data":"2 sf 78/2 ra 32:11 ta 22:8 aap 86"},
   {"Set":1,"Rally":7,"play_data":"/1 sa 58/14 ra 32:8 ta 21:2 aa 78/20 bt 87:22 da 32:11 tb c2:1 aap 56/20 de 560"},
   {"Set":1,"Rally":8,"play_data":"8 sf 89/22 ra 32:11 tb 51:2 ar 38/10 ba 33:11 db 97:8 tc 53:2 oo 88/20 da 32:8 tb c1:1 ap 65"},
-  {"Set":2,"Rally":1,"play_data":"/12 sa 89/12 ra 32:8 ta 11:2 apa 66"}
+  {"Set":2,"Rally":1,"play_data":"/12 sa 89/12 ra 32:8 ta 11:2 apa 66"},
+  {"Set":2,"Rally":2,"play_data":"12 sa 56/8 ra 3:11 tb 51:1 aap 56"}
   ]
 
 
 self = DataConversion()
-self.play2point(play_d)
+self.play2command(play_d)
 
-match_d = self.play2match(play_d)
+# class A():
+#   def __init__(self):
+#     self.team1_ab = "AA"
+#     self.team2_ab = "BB"
+#     pass
+# a = A()
+
+
+# log = self.play2log(play_d,a)
+# self.play2command(play_d)
+# for log_ in log:
+#   print(log_)

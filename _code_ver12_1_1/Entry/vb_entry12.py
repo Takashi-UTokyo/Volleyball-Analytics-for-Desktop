@@ -29,6 +29,8 @@ class Entry(Window0):
     self.Nfrot_number2 = None
     self.Nfrotlist1 = None
     self.Nfrotlist2 = None
+    self.Nfsubcondition1 = None
+    self.Nfsubconsition2 = None
     self.Nsubcondition1 = None
     self.Nsubcondition2 = None
     self.Nrally_number = 1
@@ -40,9 +42,10 @@ class Entry(Window0):
     self.Nrotcondition1 = None
     self.Nrotcondition2 = None
     self.set_result = []
-    self.match_d = None
+    self.match_d = []
     self.play_d = []
-    self.point_d = None
+    self.point_d = []
+    self.sub_d = []
     self.transition = False
     self.shutdown = False
     pass
@@ -94,8 +97,9 @@ class Entry(Window0):
     Nset_result = self.set_result[len(self.set_result)-1]
     self.Nscore1 = Nset_result["score1"]
     self.Nscore2 = Nset_result["score2"]
-    self.Nsubcondition1 = Nset_result["subcondition1"]
-    self.Nsubcondition2 = Nset_result["subcondition2"]
+    self.Nfsubcondition1 = Nset_result["fsubcondition1"]
+    self.Nfsubcondition2 = Nset_result["fsubcondition2"]
+    self.sub_d = Nset_result["sub_d"]
     self.play_d = DtC.match2play(self.match_d)
     self.point_d = DtC.play2point(self.play_d)
     self.Nrally_number = self.play_d[len(self.play_d)-1]["Rally"]+1
@@ -119,36 +123,10 @@ class Entry(Window0):
       "frot_number2":self.Nfrot_number2,
       "frotlist1":self.Nfrotlist1,
       "frotlist2":self.Nfrotlist2
-    }
+      }
     self.set_info.append(self.Nset_info)
-    self.Nsubcondition1 = [0,0,0,0,0,0]
-    self.Nsubcondition2 = [0,0,0,0,0,0]
-  
-  def calc_rotation(self):
-    rotation1 = 0
-    rotation2 = 0
-    if self.point_d:
-      point_d_ = list(filter(lambda d:d["Set"]==self.Nset_number,self.point_d))
-      for p_number0 in range(0,len(point_d_)):
-        rally = point_d_[p_number0]["Rally"]
-        if rally==1:
-          if self.Nserveteam:
-            if point_d_[p_number0]["point2"]:
-              rotation2 += 1
-          else:
-            if point_d_[p_number0]["point1"]:
-              rotation1 += 1
-        else:
-          if point_d_[p_number0-1]["point1"]:
-            if point_d_[p_number0]["point2"]:
-              rotation2 += 1
-          else:
-            if point_d_[p_number0]["point1"]:
-              rotation1 += 1
-    self.Nrot_d = {
-      "rotation1":rotation1,
-      "rotation2":rotation2
-    }
+    self.Nfsubcondition1 = [0,0,0,0,0,0]
+    self.Nfsubcondition2 = [0,0,0,0,0,0]
     pass
 
   def entry_play_data(self,rally_number,play_data):
@@ -167,8 +145,9 @@ class Entry(Window0):
       "Set":self.Nset_number,
       "score1":self.Nscore1,
       "score2":self.Nscore2,
-      "subcondition1":self.Nsubcondition1,
-      "subcondition2":self.Nsubcondition2
+      "fsubcondition1":self.Nfsubcondition1,
+      "fsubcondition2":self.Nfsubcondition2,
+      "sub_d":self.sub_d
     }
     if (result :=list(filter(lambda d: d["Set"]==self.Nset_number,self.set_result))):
       self.set_result[self.set_result.index(result[0])] = set_result_
@@ -190,23 +169,8 @@ class Entry(Window0):
     self.point_d = DtC.play2point(self.play_d)
     pass
 
-  def update_rot_number(self):
-    rot = [6,5,4,3,2,1]
-    rNumber01 = rot.index(self.Nfrot_number1)
-    rNumber02 = rot.index(self.Nfrot_number2)
-    rNumber1 = rNumber01 + self.Nrot_d["rotation1"]
-    rNumber2 = rNumber02 + self.Nrot_d["rotation2"]
-    self.Nrot_number1 = rot[(rNumber1 + 6)%6]
-    self.Nrot_number2 = rot[(rNumber2 + 6)%6]
-    pass
-  def update_rotation(self):
-    self.Nrotlist1 = [self.Nfrotlist1[x-(6-self.Nrot_d["rotation1"]%6)] for x in range(0,6)]
-    self.Nrotlist2 = [self.Nfrotlist2[y-(6-self.Nrot_d["rotation2"]%6)] for y in range(0,6)]
-    pass
-  def update_Nrotcondition(self):
-    self.Nrotcondition1 = [self.Nrotlist1[x][self.Nsubcondition1[x]] for x in range(0,6)]
-    self.Nrotcondition2 = [self.Nrotlist2[y][self.Nsubcondition2[y]] for y in range(0,6)]
-    pass
+  # アップデート : point_dの更新が必要
+
   def update_score(self):
     score1 = 0
     score2 = 0
@@ -227,6 +191,53 @@ class Entry(Window0):
         subwindow2["Serve2"].update(True)
     else:
       subwindow2[f"Serve{self.Nset_info["serveteam"]}"].update(True)
+    pass
+
+  def calc_rotation(self):
+    rotation1 = 0
+    rotation2 = 0
+    if self.point_d:
+      point_d_ = list(filter(lambda d:d["Set"]==self.Nset_number,self.point_d))
+      for p_number0 in range(0,len(point_d_)):
+        rally = point_d_[p_number0]["Rally"]
+        if rally==1:
+          if self.Nserveteam==1:
+            if point_d_[p_number0]["point2"]:
+              rotation2 += 1
+          else:
+            if point_d_[p_number0]["point1"]:
+              rotation1 += 1
+        else:
+          if point_d_[p_number0-1]["point1"]:
+            if point_d_[p_number0]["point2"]:
+              rotation2 += 1
+          else:
+            if point_d_[p_number0]["point1"]:
+              rotation1 += 1
+    self.Nrot_d = {
+      "rotation1":rotation1,
+      "rotation2":rotation2
+    }
+    pass
+
+  def update_rot_number(self):
+    rot = [6,5,4,3,2,1]
+    rNumber01 = rot.index(self.Nfrot_number1)
+    rNumber02 = rot.index(self.Nfrot_number2)
+    rNumber1 = rNumber01 + self.Nrot_d["rotation1"]
+    rNumber2 = rNumber02 + self.Nrot_d["rotation2"]
+    self.Nrot_number1 = rot[(rNumber1 + 6)%6]
+    self.Nrot_number2 = rot[(rNumber2 + 6)%6]
+    pass
+  def update_rotation(self):
+    self.Nrotlist1 = [self.Nfrotlist1[x-(6-self.Nrot_d["rotation1"]%6)] for x in range(0,6)]
+    self.Nrotlist2 = [self.Nfrotlist2[y-(6-self.Nrot_d["rotation2"]%6)] for y in range(0,6)]
+    self.Nsubcondition1 = [self.Nfsubcondition1[x-(6-self.Nrot_d["rotation1"]%6)] for x in range(0,6)]
+    self.Nsubcondition2 = [self.Nfsubcondition2[y-(6-self.Nrot_d["rotation2"]%6)] for y in range(0,6)]
+    pass
+  def update_Nrotcondition(self):
+    self.Nrotcondition1 = [self.Nrotlist1[x][self.Nsubcondition1[x]] for x in range(0,6)]
+    self.Nrotcondition2 = [self.Nrotlist2[y][self.Nsubcondition2[y]] for y in range(0,6)]
     pass
 
 
@@ -272,6 +283,43 @@ class Entry(Window0):
     window.close()
     self.Nrally_number = 1
     pass
+  
+  def main_entry_sub(self):
+    window = self.substitution_window()
+    rotcondition = [0,self.Nrotcondition1,self.Nrotcondition2]
+    frotlist = [0,self.Nfrotlist1,self.Nfrotlist2]
+    subcondition = [0,self.Nfsubcondition1,self.Nfsubcondition2]
+    while True:
+      event,values = window.read()
+      if event == sg.WIN_CLOSED:
+        break 
+      elif event == "SUB1" or event == "SUB2":
+        i = int(event[3:])
+        if values[f"In{i}"] in rotcondition[i]:
+          return option.notion("Substitution failed","Already in the court")
+        if (target := list(filter(lambda d: d[0]==values[f"Out{i}"],frotlist[i]))):
+          targetloc = frotlist[i].index(target[0])
+          if subcondition[i][targetloc]==0:
+            if frotlist[i][targetloc][1] != "0" and frotlist[i][targetloc][1] != values[f"In{i}"]:
+              return option.notion("Substitution failed","Dismatch rotationlist")
+            subcondition[i][targetloc] = 1
+            frotlist[i][targetloc][1] = values[f"In{i}"]
+          else:
+            if frotlist[i][targetloc][0] != values[f"In{i}"]:
+              return option.notion("Substitution failed","Dismatch rotationlist")
+            else:
+              subcondition[i][targetloc] = 0
+        sub_d_ = {
+          "Set":values["Set"],
+          "Rally":values["Rally"],
+          "team":i,
+          "Out":values[f"Out{i}"],
+          "In":values[f"In{i}"]
+        }
+        self.sub_d.append(sub_d_)
+        pass
+    window.close()
+    pass
 
 
   def main_entry_main(self):
@@ -296,6 +344,11 @@ class Entry(Window0):
         elif event == " Edit ":
           self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
           window[" Edit "].update(disabled=True)
+        self.entry_update(window,subwindow,subwindow2)
+        pass
+
+      elif event == "SUB":
+        self.main_entry_sub()
         self.entry_update(window,subwindow,subwindow2)
         pass
       elif event == "Save":
@@ -520,5 +573,6 @@ class Index(Window0):
     self.edition_index()
     pass
 
-new = Entry_new()
-new.exe()
+self = Entry_new()
+self.exe()
+
