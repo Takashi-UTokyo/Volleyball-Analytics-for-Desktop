@@ -30,7 +30,7 @@ class Entry(Window0):
     self.Nfrotlist1 = None
     self.Nfrotlist2 = None
     self.Nfsubcondition1 = None
-    self.Nfsubconsition2 = None
+    self.Nfsubcondition2 = None
     self.Nsubcondition1 = None
     self.Nsubcondition2 = None
     self.Nrally_number = 1
@@ -284,11 +284,11 @@ class Entry(Window0):
     window.close()
     self.Nrally_number = 1
     pass
-  
+
   def main_entry_sub(self):
     window = self.substitution_window()
     window["Set"].update(self.Nset_number)
-    window["Rally"].update(self.Nrally_number)
+    window["Rally"].update(self.Nrally_number-1)
     rotcondition = [0,self.Nrotcondition1,self.Nrotcondition2]
     frotlist = [0,self.Nfrotlist1,self.Nfrotlist2]
     subcondition = [0,self.Nfsubcondition1,self.Nfsubcondition2]
@@ -320,9 +320,14 @@ class Entry(Window0):
           "In":values[f"In{i}"]
         }
         self.Nsub_d.append(sub_d_)
-        option.notion("Substitution success")
+        option.notion("Substitution success","")
         pass
     window.close()
+
+    self.Nfsubcondition1 = subcondition[1] 
+    self.Nfsubcondition2 = subcondition[2]
+    self.Nfrotlist1 = frotlist[1]
+    self.Nfrotlist2 = frotlist[2]
     pass
 
 
@@ -337,9 +342,12 @@ class Entry(Window0):
         self.shutdown = True
         break
       elif event == " Search ":
-        search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
-        window["-play_data-"].update(search_play_data)
-        window[" Edit "].update(disabled=False)
+        try:
+          search_play_data = self.search_play_data(int(values["-Set-"]),int(values["-Rally-"]))
+          window["-play_data-"].update(search_play_data)
+          window[" Edit "].update(disabled=False)
+        except:
+          option.notion("Data Not Found","Out of List")
         pass
       elif event == "Submit" or event == " Edit ":
         if event == "Submit":
@@ -348,7 +356,7 @@ class Entry(Window0):
         elif event == " Edit ":
           self.edit_play_data(int(values["-Set-"]),int(values["-Rally-"]),values["-play_data-"])
           window[" Edit "].update(disabled=True)
-          window["-play_data-"].update()
+          window["-play_data-"].update("")
         self.entry_update(window,subwindow,subwindow2)
         pass
 
@@ -581,27 +589,7 @@ class Index(Window0):
     self.edition_index()
     pass
 
-new = Entry_new()
-new.exe()
 
-new.Nfrotlist1[1][1] = "6"
-new.sub_d = [
-  {
-    "Set":1,
-    "Rally":36,
-    "team":1,
-    "Out":"24",
-    "In":"6"
-  },
-  {
-    "Set":1,
-    "Rally":45,
-    "team":1,
-    "Out":"6",
-    "In":"24"
-  }
-]
+exi = Entry_exi()
+exi.exe()
 
-new.complete_set()
-new.set_result
-file.save_data(new.match_info,new.set_info,new.set_result,new.play_d)
