@@ -592,4 +592,14 @@ class Index(Window0):
 
 exi = Entry_exi()
 exi.exe()
+searchset = None
+searchrally = None
+list(filter(lambda d:d["Set"]==searchset and d["Rally"]==searchrally,exi.play_d))[0]["play_data"]
 
+# list(filter(lambda d:d["Set"]==searchset and d["Rally"]==searchrally,exi.play_d))[0]["play_data"] = ""
+file.save_data(exi.match_info,exi.set_info,exi.set_result,exi.play_d)
+DtC.play2command(exi.play_d)
+
+log = DtC.play2log(exi.play_d,exi)
+for log_ in log:
+  print(log_)

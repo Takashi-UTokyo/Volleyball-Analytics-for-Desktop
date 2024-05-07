@@ -82,10 +82,13 @@ class DataConversion:
             }
             command_d.append(command_d_)
             continue
-          No = int(command_dall[0])
-          action = command_dall[1][0]
-          result = command_dall[1][1:]
-          zone = self.zone2int(command_dall[2])
+          try:
+            No = int(command_dall[0])
+            action = command_dall[1][0]
+            result = command_dall[1][1:]
+            zone = self.zone2int(command_dall[2])
+          except:
+            return print(f"{play_d_},{t_number0},{m_number0} Error")
           command_d_ = {
             "Set":play_d_["Set"],
             "Rally":play_d_["Rally"],
@@ -199,22 +202,11 @@ class DataConversion:
     return play_d
   
   def log_action(self,action):
-    if action == "s":
-      log_action = "サーブ"
-    elif action == "a":
-      log_action = "アタック"
-    elif action == "t":
-      log_action = "トス"
-    elif action == "b":
-      log_action = "ブロック"
-    elif action == "r":
-      log_action = "レセプション"
-    elif action == "d":
-      log_action = "ディグ"
-    elif action == "e":
-      log_action = "エラー"
-    elif action == "o":
-      log_action = "返球"
+    actionlist = ["s","a","t","b","r","d","e","o","0"]
+    log_actionlist = ["サーブ","アタック","トス","ブロック","レセプション","ディグ","エラー","返球","カバー"]
+    action = "s"
+    actionloc = actionlist.index(action)
+    log_action = log_actionlist[actionloc]
     return log_action
   
   def play2log(self,play_d,cls):
