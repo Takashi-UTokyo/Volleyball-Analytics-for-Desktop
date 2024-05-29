@@ -508,6 +508,7 @@ class Entry_exi(Entry):
     if self.shutdown:
       return
     self.entry_exi_1()
+    pass
 
 
 class Index(Window0):
@@ -589,9 +590,11 @@ class Index(Window0):
     self.edition_index()
     pass
 
-
+self = Entry_exi()
 exi = Entry_exi()
 exi.exe()
+self.play_d
+pd.DataFrame(self.play_d)
 searchset = None
 searchrally = None
 list(filter(lambda d:d["Set"]==searchset and d["Rally"]==searchrally,exi.play_d))[0]["play_data"]
