@@ -13,7 +13,9 @@ Teams = Team2 = "Sir Safety Susa Vim Perugia"
 # チームデータの読み込み
 def team_index(Season_path,Tournament_path,Team1,Team2):
   try:
-    data_p = pd.read_excel(r"C:\Volleyball\Index\Team_index.xlsx", sheet_name=Tournament_path,index_col=None)
+    # data_p = pd.read_excel(r"C:\Volleyball\Index\Team_index.xlsx", sheet_name=Tournament_path,index_col=None)
+    data_p = pd.read_excel(r"_code_ver11_2_1\Index\Team_index.xlsx", sheet_name=Tournament_path,index_col=None)
+
   except:
     data_p = pd.DataFrame([])
   try:
@@ -41,7 +43,8 @@ def fileopen(Season,Tournament,date,Teamf,Teams):
     Teams_path = r"{}".format(Teams)
     folder_path = Season_path + " " + Tournament_path
     filename_path = date_path +" "+ Teamf_path + " vs " + Teams_path + " " + "Full Scorepy.xlsx"
-    path = r"C:\Volleyball"
+    # path = r"C:\Volleyball"
+    path = r"_code_ver11_2_1\Data"
     file_path = os.path.join(path,folder_path,filename_path)
     df = pd.read_excel(file_path, sheet_name="Full Score",index_col=None)
     df_Info = pd.read_excel(file_path,sheet_name="Info",index_col=None)
@@ -126,7 +129,8 @@ def filesave(Season_path,Tournament_path,date_path,Team1,Team2,Set_Info,Set_Resu
     Teams_path = Teamsort[1]
     folder_path = Season_path + " " + Tournament_path
     filename_path = date_path + " " + Teamf_path + " vs " + Teams_path + " " + "Full scorepy.xlsx"
-    path = r"C:\Volleyball"
+    # path = r"C:\Volleyball"
+    path = r"_code_ver11_2_1\Data"
     file_path = os.path.join(path,folder_path,filename_path)
   except:
     vo.errorWin("<< Path cannot made >>")
@@ -144,7 +148,8 @@ def filesave(Season_path,Tournament_path,date_path,Team1,Team2,Set_Info,Set_Resu
 # 入力データの試合情報の保存
 def fileInfosave(Season_path,Tournament_path,date_path,Team1,Team2,Set_Result):
   try:
-    file_path = r"C:\Volleyball\Index\file_index.xlsx"
+    # file_path = r"C:\Volleyball\Index\file_index.xlsx"
+    file_path = r"_code_ver11_2_1\Index\file_index.xlsx"
     df_data = pd.read_excel(file_path,sheet_name="data")
     Teamsort = [Team1,Team2]
     Teamsort.sort()
@@ -202,7 +207,8 @@ def playerInfosave(Season_path,Tournament_path,date_path,Team1,Team2):
 
 # チームデータの読み込み
 def team_search(Team):
-  file_data = pd.read_excel(r"C:\Volleyball\Index\file_index.xlsx",sheet_name="data",index_col=None)
+  # file_data = pd.read_excel(r"C:\Volleyball\Index\file_index.xlsx",sheet_name="data",index_col=None)
+  file_data = pd.read_excel(r"_code_ver11_2_1\Index\file_index.xlsx",sheet_name="data",index_col=None)
   df_search = file_data[(file_data["Teamf"] == Team) | (file_data["Teams"] == Team)].reset_index(drop=True)
   df_all = pd.DataFrame([])
   for i in range(0,len(df_search)):
