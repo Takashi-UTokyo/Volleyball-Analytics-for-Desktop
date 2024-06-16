@@ -6,6 +6,11 @@
 
 ### 実行例
 現在は_code_ver11_2_1が利用可能です。
+Windowsで実行する場合は、requirements.txtよりライブライをインストールしてください。
+```
+pip install -r requirements.txt
+```
+
 _code_ver_11_2_1内のtestver_11_2_1.pyを実行してください
 - ステップ１
 入力モード(ENTRY MODE)を選択してください。
