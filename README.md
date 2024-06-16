@@ -2,7 +2,7 @@
 ## _code_ver11_2_1内のモジュールを利用します
 ## testver_11_2_1.pyを実行してください
 
-![image1](_code_ver11_2_1\Images\image1.png)
+![image1](\_code_ver11_2_1\Images\image1.png)
 ![](_code_ver11_2_1\Images\image2.png)
 ![](_code_ver11_2_1\Images\image3.png)
 ![](_code_ver11_2_1\Images\image4.png)
