@@ -2,9 +2,11 @@
 ## _code_ver11_2_1内のモジュールを利用します
 ## testver_11_2_1.pyを実行してください
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
+![](_code_ver11_2_1\Images\image1.png)
+![](_code_ver11_2_1\Images\image2.png)
+![](_code_ver11_2_1\Images\image3.png)
+![](_code_ver11_2_1\Images\image4.png)
+![](_code_ver11_2_1\Images\image5.png)
+![](_code_ver11_2_1\Images\image6.png)
+![](_code_ver11_2_1\Images\image7.png)
+![](_code_ver11_2_1\Images\image8.png)
